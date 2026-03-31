@@ -144,30 +144,24 @@ class InstagramManager:
                     self.simulate_human()
                     activity_counter = 0
 
-                # Obtenemos hilos: Bypass Manual TOTAL (Principal + Solicitudes)
-                logger.info("[IG-DEBUG] Consultando bandejas (v13.2)...")
+                # Obtenemos hilos: Modo Híbrido (Principal Normal + Solicitudes Bypass)
+                logger.info("[IG-DEBUG] Consultando bandejas (v13.0 restaurado)...")
                 
                 all_threads_data = []
 
-                # 1. Bypass Manual: Bandeja Principal (Inbox)
+                # 1. Bandeja principal (API Oficial - Funcionaba bien)
                 try:
-                    res_inbox = self.cl.private_request("direct_v2/inbox/", params={"selected_filter": "unread"})
-                    if res_inbox.get("status") == "ok":
-                        inbox = res_inbox.get("inbox", {})
-                        threads = inbox.get("threads", [])
-                        logger.info(f"[IG-DEBUG] Inbox Principal: {len(threads)} hilos no leídos encontrados.")
-                        for t in threads:
-                            items = t.get("items", [])
-                            if items:
-                                last_msg = items[0]
-                                all_threads_data.append({
-                                    "id": t.get("thread_id"),
-                                    "title": t.get("thread_title", "Chat"),
-                                    "text": last_msg.get("text", ""),
-                                    "user_id": str(last_msg.get("user_id"))
-                                })
-                except Exception as ie:
-                    logger.warning(f"[IG-DEBUG] Error en bypass de Inbox: {ie}")
+                    unread_threads = self.cl.direct_threads(amount=20, selected_filter="unread")
+                    for t in unread_threads:
+                        if t.messages:
+                            all_threads_data.append({
+                                "id": t.id,
+                                "title": t.thread_title,
+                                "text": t.messages[0].text,
+                                "user_id": str(t.messages[0].user_id)
+                            })
+                except Exception as te:
+                    logger.warning(f"[IG-DEBUG] Error en inbox principal: {te}")
                 
                 # 2. Bypass Manual: Solicitudes (Pending)
                 try:
