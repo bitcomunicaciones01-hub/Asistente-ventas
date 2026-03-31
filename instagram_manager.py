@@ -212,6 +212,12 @@ class InstagramManager:
                             time.sleep(writing_time) 
                             
                             # 4. Responder
+                            try:
+                                # Si es una solicitud (Bypass Manual), la aprobamos primero
+                                self.cl.direct_thread_approve(td["id"])
+                            except:
+                                pass # Si ya estaba aprobada o falla, seguimos adelante
+                                
                             self.cl.direct_answer(td["id"], response_text)
                             logger.info(f"[IG-OK] Respondido exitosamente a {td['title']}")
                     except Exception as th_err:
