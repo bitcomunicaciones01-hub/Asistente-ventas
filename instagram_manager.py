@@ -204,6 +204,8 @@ class InstagramManager:
                         # IGNORAR si el mensaje es nuestro (evita bucles)
                         is_self = td["user_id"] == self.my_user_id
                         
+                        logger.info(f"[IG-DIAGNOSTICO] Analizando hilo '{td['title']}' | is_self: {is_self} ({td['user_id']} vs {self.my_user_id}) | text: '{td['text']}'")
+                        
                         if td["text"] and not is_self:
                             logger.info(f"[IG-EVENTO] Nuevo mensaje en '{td['title']}': '{td['text']}'")
                             
@@ -221,6 +223,7 @@ class InstagramManager:
                             writing_time = min(len(response_text) / 10, 6)
                             logger.info(f"[IG-DEBUG] Simulando escritura ({writing_time:.1f}s)...")
                             time.sleep(writing_time) 
+
                             
                             # 4. Responder
                             try:
