@@ -82,11 +82,19 @@ class InstagramManager:
                 logger.info("[IG-DEBUG] Cargando sesión persistente local (ig_session.json)...")
                 self.cl.load_settings(self.session_file)
             
-            logger.info(f"[IG-DEBUG] Ejecutando cl.login() para {self.username}...")
-            self.cl.login(self.username, self.password)
+            logger.info(f"[IG-DEBUG] Intentando cl.login() para {self.username}...")
+            try:
+                self.cl.login(self.username, self.password)
+            except Exception as login_err:
+                logger.warning(f"[IG-DEBUG] Error en cl.login (reintentando con sesión): {login_err}")
             
-            # Guardamos nuestro ID en una variable propia para evitar el error de 'no setter'
-            self.my_user_id = str(self.cl.user_id)
+            # Recuperar el ID de cualquier forma posible
+            try:
+                self.my_user_id = str(self.cl.user_id)
+            except:
+                logger.info("[IG-DEBUG] Buscando User ID manualmente...")
+                self.my_user_id = str(self.cl.user_id_from_username(self.username))
+            
             logger.info(f"[IG-DEBUG] Logueado con ID de Cuenta: {self.my_user_id}")
             
             # Guardamos localmente siempre para tener el backup
