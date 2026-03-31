@@ -9,16 +9,15 @@
     --user-msg-bg: var(--primary-gradient);
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* Estilos aislados para el widget de chat */
+#sales-ai-widget-container {
+    all: initial; /* Reseteamos para que el tema de WP no rompa el bot */
     font-family: 'Outfit', sans-serif;
 }
 
-body {
-    background: #0f172a;
-    color: var(--text-white);
+#sales-ai-widget-container * {
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
 }
 
 /* Chat Window - The WOW factor */
