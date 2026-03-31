@@ -5,8 +5,6 @@ import json
 import logging
 import tempfile
 import requests
-from io import BytesIO
-from PIL import Image
 from instagrapi import Client
 from instagrapi.exceptions import LoginRequired, ChallengeRequired
 from dotenv import load_dotenv
@@ -232,34 +230,7 @@ class InstagramManager:
                                 pass # Si ya estaba aprobada o falla, seguimos adelante
                                 
                             self.cl.direct_answer(td["id"], response_text)
-                            logger.info(f"[IG-OK] Texto respondido exitosamente a {td['title']}")
-                            
-                            # 5. Enviar Fotos (Ráfaga visual v13.5)
-                            products_found = response_data.get("products", [])
-                            if products_found:
-                                logger.info(f"[IG-DEBUG] Preparando {min(len(products_found), 3)} fotos para enviar...")
-                                for prod in products_found[:3]: # Solo top 3
-                                    images = prod.get("images", [])
-                                    if images:
-                                        img_url = images[0]
-                                        try:
-                                            # Descargamos temporalmente para enviar (y convertimos a JPEG puro para evitar ERROR 500)
-                                            img_res = requests.get(img_url, timeout=10)
-                                            if img_res.status_code == 200:
-                                                img_obj = Image.open(BytesIO(img_res.content))
-                                                if img_obj.mode != "RGB":
-                                                    img_obj = img_obj.convert("RGB")
-                                                
-                                                with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_img:
-                                                    img_obj.save(tmp_img.name, "JPEG", quality=85)
-                                                    tmp_path = tmp_img.name
-                                                
-                                                time.sleep(random.uniform(2, 4)) # Delay anti-spam
-                                                self.cl.direct_send_photo(tmp_path, thread_ids=[td["id"]])
-                                                os.unlink(tmp_path)
-                                                logger.info(f"[IG-OK] Foto de '{prod['name'][:15]}' enviada.")
-                                        except Exception as img_err:
-                                            logger.warning(f"[IG-DEBUG] No se pudo enviar foto de {prod['name']}: {img_err}")
+                            logger.info(f"[IG-OK] Respondido exitosamente a {td['title']}")
                                             
                     except Exception as th_err:
                         logger.error(f"[IG-ERROR] Error al procesar hilo individual: {th_err}")
