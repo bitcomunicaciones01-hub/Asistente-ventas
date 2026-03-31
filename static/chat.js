@@ -1,10 +1,15 @@
-document.addEventListener('DOMContentLoaded', () => {
+const initChat = () => {
     const chatButton = document.getElementById('chat-button');
     const chatWindow = document.getElementById('chat-window');
     const closeChat = document.getElementById('close-chat');
     const sendBtn = document.getElementById('send-btn');
     const userInput = document.getElementById('user-input');
     const chatMessages = document.getElementById('chat-messages');
+
+    if (!chatButton || !chatWindow) return;
+
+    // BASE URL de Railway (Si no está definida, usa local)
+    const baseUrl = window.RAILWAY_URL || "";
 
     // Toggle Chat Window
     chatButton.addEventListener('click', () => {
@@ -31,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const typingId = appendMessage('bot', '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>', true);
 
         try {
-            const response = await fetch('/chat', {
+            const response = await fetch(`${baseUrl}/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: text, context: 'tienda' })
@@ -148,4 +153,8 @@ document.addEventListener('DOMContentLoaded', () => {
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }, 150);
     }
-});
+};
+
+// Ejecución inmediata y también por si acaso al cargar el DOM
+initChat();
+document.addEventListener('DOMContentLoaded', initChat);

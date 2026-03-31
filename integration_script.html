@@ -4,8 +4,9 @@
 <div id="sales-ai-widget-container"></div>
 <script>
     (function() {
-        // REEMPLAZAR CON TU URL DE RAILWAY CUANDO ESTÉ LISTO
-        const RAILWAY_URL = "http://localhost:8000"; 
+        // CORRECCIÓN: Se agregó el https:// y se hace global
+        const RAILWAY_URL = "https://web-production-73303.up.railway.app"; 
+        window.RAILWAY_URL = RAILWAY_URL;
 
         const container = document.getElementById('sales-ai-widget-container');
         fetch(`${RAILWAY_URL}/static/index.html`)
