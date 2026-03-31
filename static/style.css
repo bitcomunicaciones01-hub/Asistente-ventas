@@ -283,21 +283,53 @@
     position: fixed;
     bottom: 2rem;
     right: 2rem;
-    width: 65px;
-    height: 65px;
-    background: #ffffff; /* Fondo blanco limpio para que resalte el robot */
-    border-radius: 50%; /* Círculo perfecto */
-    border: 2px solid var(--primary-color);
+    width: 80px; /* Más grande a pedido del usuario */
+    height: 80px;
+    background: #ffffff;
+    border-radius: 50%;
+    border: 3px solid var(--primary-color);
     color: white;
     cursor: pointer;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
     display: flex !important;
     align-items: center;
     justify-content: center;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     z-index: 99999 !important;
     padding: 0;
-    overflow: hidden;
+    overflow: visible; /* Permitir que la etiqueta sobresalga */
+}
+
+.chat-label {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary-gradient);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    animation: float 2s infinite ease-in-out;
+}
+
+.chat-label::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid var(--primary-color);
+}
+
+@keyframes float {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-5px); }
 }
 
 .chat-bubble img {
