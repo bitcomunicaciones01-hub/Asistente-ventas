@@ -85,6 +85,10 @@ class InstagramManager:
             logger.info(f"[IG-DEBUG] Ejecutando cl.login() para {self.username}...")
             self.cl.login(self.username, self.password)
             
+            # Recuperar y guardar el user_id explícitamente para evitar bucles
+            self.cl.user_id = self.cl.user_id or self.cl.user_info_by_username(self.username).pk
+            logger.info(f"[IG-DEBUG] Logueado con User ID: {self.cl.user_id}")
+            
             # Guardamos localmente siempre para tener el backup
             self.cl.dump_settings(self.session_file)
             logger.info("[OK] Conexión a Instagram establecida correctamente.")
@@ -138,8 +142,11 @@ class InstagramManager:
                     if not messages: continue
                     
                     last_msg = messages[0]
-                    if last_msg.item_type == 'text' and last_msg.user_id != self.cl.user_id:
-                        logger.info(f"[IG-EVENTO] Nuevo mensaje de {thread.thread_title}: '{last_msg.text}'")
+                    # IGNORAR si el mensaje es nuestro (evita bucles)
+                    is_self = str(last_msg.user_id) == str(self.cl.user_id)
+                    
+                    if last_msg.item_type == 'text' and not is_self:
+                        logger.info(f"[IG-EVENTO] Nuevo mensaje de {thread.thread_title} (ID:{last_msg.user_id}): '{last_msg.text}'")
                         
                         # 1. Tiempo de lectura
                         delay = random.uniform(3, 7)
