@@ -15,7 +15,10 @@ class WooManager:
 
     def search_products(self, query=None, category=None):
         """Busca productos por nombre o categoría."""
-        params = {"status": "publish"}
+        params = {
+            "status": "publish",
+            "stock_status": "instock"
+        }
         if query:
             params["search"] = query
         if category:
