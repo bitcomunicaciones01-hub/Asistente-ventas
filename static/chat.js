@@ -1,8 +1,17 @@
 const initChat = () => {
-    const chatButton = document.getElementById('chat-button');
-    const chatWindow = document.getElementById('chat-window');
-    const closeChat = document.getElementById('close-chat');
-    const sendBtn = document.getElementById('send-btn');
+    // Polling de elementos críticos
+    const getElements = () => ({
+        chatButton: document.getElementById('chat-button'),
+        chatWindow: document.getElementById('chat-window'),
+        closeChat: document.getElementById('close-chat'),
+        sendBtn: document.getElementById('send-btn'),
+        userInput: document.getElementById('user-input'),
+        chatMessages: document.getElementById('chat-messages')
+    });
+
+    let els = getElements();
+    if (!els.chatButton || !els.chatWindow) return;
+
     // BASE URL de Railway (Si no está definida, usa local)
     const baseUrl = window.RAILWAY_URL || "";
 
@@ -18,26 +27,30 @@ const initChat = () => {
     }
 
     // Toggle Chat Window
-    chatButton.addEventListener('click', () => {
-        chatWindow.classList.remove('hidden');
-        chatButton.style.display = 'none';
-        userInput.focus();
+    els.chatButton.addEventListener('click', () => {
+        els = getElements(); // Refrescamos por si acaso
+        els.chatWindow.classList.remove('hidden');
+        els.chatButton.style.display = 'none';
+        if (els.userInput) els.userInput.focus();
     });
 
-    closeChat.addEventListener('click', () => {
-        chatWindow.classList.add('hidden');
-        chatButton.style.display = 'flex';
-    });
+    if (els.closeChat) {
+        els.closeChat.addEventListener('click', () => {
+            els.chatWindow.classList.add('hidden');
+            els.chatButton.style.display = 'flex';
+        });
+    }
 
     // Send Message
     const sendMessage = async () => {
         try {
-            const text = userInput.value.trim();
+            els = getElements();
+            const text = els.userInput.value.trim();
             if (!text) return;
 
             // User Message UI
             appendMessage('user', text);
-            userInput.value = '';
+            els.userInput.value = '';
 
             // Bot Thinking indicator
             const typingId = appendMessage('bot', '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>', true);
