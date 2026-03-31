@@ -155,6 +155,19 @@ const initChat = () => {
     }
 };
 
-// Ejecución inmediata y también por si acaso al cargar el DOM
-initChat();
+// Polling: Intentar iniciar el chat cada 100ms hasta que los elementos aparezcan
+let initAttempts = 0;
+const pollInit = setInterval(() => {
+    const el = document.getElementById('chat-button');
+    if (el) {
+        initChat();
+        clearInterval(pollInit);
+    }
+    initAttempts++;
+    if (initAttempts > 50) { // Tras 5 segundos nos rendimos
+        clearInterval(pollInit);
+    }
+}, 100);
+
+// También intentamos por si el DOM ya estaba listo
 document.addEventListener('DOMContentLoaded', initChat);

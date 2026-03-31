@@ -321,43 +321,40 @@
 /* RESPONSIVIDAD MÓVIL (WOW Mobile Experience) */
 @media (max-width: 480px) {
     .chat-window {
-        width: 85%; /* Menos ancho para móviles (a pedido del usuario) */
-        height: 70%; /* Menos alto */
+        width: 92%; /* Ajustado para que sea cómodo */
+        height: 75%; 
         bottom: 1rem;
         right: 1rem;
-        max-height: 500px;
-        border-radius: 16px;
+        max-height: 600px;
+        border-radius: 20px;
         border: 1px solid var(--glass-border);
     }
 
     .chat-bubble {
-        bottom: 1rem;
-        right: 1rem;
-        width: 55px;
-        height: 55px;
-    }
-
-    .chat-header {
-        padding: 1rem;
-    }
-
-    .avatar {
-        width: 40px;
-        height: 40px;
-        font-size: 1.4rem;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        width: 50px;
+        height: 50px;
     }
 
     .chat-messages {
-        padding: 1rem;
-        gap: 1rem;
-    }
-
-    .product-card {
-        min-width: 135px; /* Más grandes en móvil para facilitar el clic */
-        max-width: 135px;
+        padding: 0.75rem;
+        gap: 0.75rem;
     }
 
     .chat-input-area {
-        padding: 1rem;
+        padding: 0.75rem;
+        gap: 0.5rem; /* Menos espacio para que entre el botón */
+    }
+
+    #send-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+    }
+
+    .chat-input-area input {
+        padding: 0.75rem;
+        font-size: 0.85rem;
     }
 }
