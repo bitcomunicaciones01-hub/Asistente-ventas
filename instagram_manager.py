@@ -5,6 +5,8 @@ import json
 import logging
 import tempfile
 import requests
+from io import BytesIO
+from PIL import Image
 from instagrapi import Client
 from instagrapi.exceptions import LoginRequired, ChallengeRequired
 from dotenv import load_dotenv
@@ -241,11 +243,15 @@ class InstagramManager:
                                     if images:
                                         img_url = images[0]
                                         try:
-                                            # Descargamos temporalmente para enviar
+                                            # Descargamos temporalmente para enviar (y convertimos a JPEG puro para evitar ERROR 500)
                                             img_res = requests.get(img_url, timeout=10)
                                             if img_res.status_code == 200:
+                                                img_obj = Image.open(BytesIO(img_res.content))
+                                                if img_obj.mode != "RGB":
+                                                    img_obj = img_obj.convert("RGB")
+                                                
                                                 with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_img:
-                                                    tmp_img.write(img_res.content)
+                                                    img_obj.save(tmp_img.name, "JPEG", quality=85)
                                                     tmp_path = tmp_img.name
                                                 
                                                 time.sleep(random.uniform(2, 4)) # Delay anti-spam
