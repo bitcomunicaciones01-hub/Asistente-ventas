@@ -3,13 +3,19 @@ const initChat = () => {
     const chatWindow = document.getElementById('chat-window');
     const closeChat = document.getElementById('close-chat');
     const sendBtn = document.getElementById('send-btn');
-    const userInput = document.getElementById('user-input');
-    const chatMessages = document.getElementById('chat-messages');
-
-    if (!chatButton || !chatWindow) return;
-
     // BASE URL de Railway (Si no está definida, usa local)
     const baseUrl = window.RAILWAY_URL || "";
+
+    // CARGA DE LOGO DINÁMICO
+    const botLogo = document.getElementById('bot-logo');
+    if (botLogo) {
+        botLogo.src = `${baseUrl}/static/logo.png`;
+    }
+
+    const bubbleLogo = document.getElementById('bubble-logo');
+    if (bubbleLogo) {
+        bubbleLogo.src = `${baseUrl}/static/logo.png`;
+    }
 
     // Toggle Chat Window
     chatButton.addEventListener('click', () => {
