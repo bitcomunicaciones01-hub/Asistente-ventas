@@ -25,7 +25,7 @@ class SalesAgent:
                 "   💰 $[Precio]\n"
                 "   👉 www.bitcomunicaciones.com/[ruta-del-producto]\n\n"
                 "5. Deja una línea vacía antes y después de la URL para que el celular lo detecte correctamente.\n"
-                "6. Si no hay stock o no encuentras el producto exacto, dile amablemente que actualmente no hay stock y ofrécele contactar por WhatsApp (wa.me/+543425482454) por si llega a ingresar."
+                "6. Si no hay stock o no encuentras el producto exacto, dile amablemente que actualmente no hay stock y ofrécele contactar por WhatsApp (api.whatsapp.com/send?phone=543425482454) por si llega a ingresar."
             )
         else:
             return (
@@ -35,7 +35,7 @@ class SalesAgent:
                 "Si la herramienta te devuelve productos, tu respuesta DEBE SER únicamente una frase corta como: '¡Mirá estas opciones que encontré para vos!'. "
                 "NUNCA describas los productos en el texto, el sistema ya los muestra en la grilla horizontal de 3.\n"
                 "Sé servicial y persuasivo. Usa emojis.\n"
-                "SI NO HAY RESULTADOS: Dile que por el momento no hay stock de ese repuesto y sugiérele contactar con un humano por WhatsApp: https://wa.me/543425482454 por si aparecen nuevos."
+                "SI NO HAY RESULTADOS: Dile que por el momento no hay stock de ese repuesto y sugiérele contactar con un humano por WhatsApp: api.whatsapp.com/send?phone=543425482454 por si aparecen nuevos."
             )
 
     def process_message(self, user_message, context="tienda"):
