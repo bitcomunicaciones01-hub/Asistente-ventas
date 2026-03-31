@@ -143,47 +143,59 @@ class InstagramManager:
                     activity_counter = 0
 
                 # Obtenemos hilos: Principal (No leídos) + Solicitudes (Pending)
-                logger.debug("[IG-DEBUG] Consultando bandeja principal y solicitudes...")
+                logger.debug("[IG-DEBUG] Consultando bandejas...")
                 
-                # 1. Bandeja principal no leída
-                unread_threads = self.cl.direct_threads(amount=20, selected_filter="unread")
-                # 2. Solicitudes (Pending)
-                pending_threads = self.cl.direct_pending_inbox(amount=10)
+                all_threads = []
+
+                # 1. Intentar Bandeja principal
+                try:
+                    unread_threads = self.cl.direct_threads(amount=20, selected_filter="unread")
+                    all_threads.extend(unread_threads)
+                except Exception as te:
+                    logger.warning(f"[IG-DEBUG] Error al leer inbox principal (posible cambio de Instagram): {te}")
                 
-                all_threads = unread_threads + pending_threads
+                # 2. Intentar Solicitudes (Pending)
+                try:
+                    pending_threads = self.cl.direct_pending_inbox(amount=10)
+                    all_threads.extend(pending_threads)
+                except Exception as pe:
+                    logger.warning(f"[IG-DEBUG] Error al leer solicitudes pending: {pe}")
                 
                 if not all_threads:
-                    logger.debug("[IG-DEBUG] No hay mensajes nuevos en ninguna carpeta.")
+                    logger.debug("[IG-DEBUG] No hay mensajes nuevos procesables.")
 
                 for thread in all_threads:
-                    messages = thread.messages
-                    if not messages: continue
-                    
-                    last_msg = messages[0]
-                    # IGNORAR si el mensaje es nuestro (evita bucles)
-                    is_self = str(last_msg.user_id) == self.my_user_id
-                    
-                    if last_msg.item_type == 'text' and not is_self:
-                        logger.info(f"[IG-EVENTO] Nuevo mensaje en '{thread.thread_title}': '{last_msg.text}'")
+                    try:
+                        messages = thread.messages
+                        if not messages: continue
                         
-                        # 1. Tiempo de lectura
-                        delay = random.uniform(3, 7)
-                        logger.info(f"[IG-DEBUG] Simulando lectura ({delay:.1f}s)...")
-                        time.sleep(delay)
+                        last_msg = messages[0]
+                        # IGNORAR si el mensaje es nuestro (evita bucles)
+                        is_self = str(last_msg.user_id) == self.my_user_id
                         
-                        # 2. IA genera respuesta
-                        logger.info(f"[IG-DEBUG] Consultando al Agente de Ventas...")
-                        response_data = sales_agent.process_message(last_msg.text, context="instagram")
-                        response_text = response_data["text"]
-                        
-                        # 3. Tiempo de escritura
-                        writing_time = min(len(response_text) / 10, 6)
-                        logger.info(f"[IG-DEBUG] Simulando escritura ({writing_time:.1f}s)...")
-                        time.sleep(writing_time) 
-                        
-                        # 4. Responder
-                        self.cl.direct_answer(thread.id, response_text)
-                        logger.info(f"[IG-OK] Respondido exitosamente a {thread.thread_title}")
+                        if last_msg.item_type == 'text' and not is_self:
+                            logger.info(f"[IG-EVENTO] Nuevo mensaje en '{thread.thread_title}': '{last_msg.text}'")
+                            
+                            # 1. Tiempo de lectura
+                            delay = random.uniform(3, 7)
+                            logger.info(f"[IG-DEBUG] Simulando lectura ({delay:.1f}s)...")
+                            time.sleep(delay)
+                            
+                            # 2. IA genera respuesta
+                            logger.info(f"[IG-DEBUG] Consultando al Agente de Ventas...")
+                            response_data = sales_agent.process_message(last_msg.text, context="instagram")
+                            response_text = response_data["text"]
+                            
+                            # 3. Tiempo de escritura
+                            writing_time = min(len(response_text) / 10, 6)
+                            logger.info(f"[IG-DEBUG] Simulando escritura ({writing_time:.1f}s)...")
+                            time.sleep(writing_time) 
+                            
+                            # 4. Responder
+                            self.cl.direct_answer(thread.id, response_text)
+                            logger.info(f"[IG-OK] Respondido exitosamente a {thread.thread_title}")
+                    except Exception as th_err:
+                        logger.error(f"[IG-ERROR] Error al procesar hilo individual: {th_err}")
                 
                 # Espera entre chequeos (Acortada para testing inicial)
                 wait_time = random.uniform(20, 50)
