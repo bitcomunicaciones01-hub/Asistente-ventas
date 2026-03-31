@@ -57,31 +57,44 @@ class InstagramManager:
         import base64
         import tempfile
         try:
+            logger.info(f"[IG-DEBUG] Iniciando proceso de login para usuario: {self.username}")
+            if not self.username or not self.password:
+                logger.error("[IG-FATAL] No se encontraron IG_USERNAME o IG_PASSWORD en las variables de entorno.")
+                return False
+
             # 1. Intentar cargar desde variable de entorno (Modo Railway)
             session_b64 = os.getenv("INSTAGRAM_SESSION_B64")
             if session_b64:
-                logger.info("[IG] Cargando sesión desde variable de entorno (Railway)...")
-                session_data = json.loads(base64.b64decode(session_b64).decode())
-                with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as tmp:
-                    json.dump(session_data, tmp)
-                    tmp_path = tmp.name
-                self.cl.load_settings(tmp_path)
-                os.unlink(tmp_path)
+                logger.info("[IG-DEBUG] Intentando cargar sesión desde INSTAGRAM_SESSION_B64...")
+                try:
+                    session_data = json.loads(base64.b64decode(session_b64).decode())
+                    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as tmp:
+                        json.dump(session_data, tmp)
+                        tmp_path = tmp.name
+                    self.cl.load_settings(tmp_path)
+                    os.unlink(tmp_path)
+                    logger.info("[IG-DEBUG] Sesión B64 cargada exitosamente.")
+                except Exception as b64e:
+                    logger.warning(f"[IG-DEBUG] Error al cargar sesión B64 (ignorando): {b64e}")
+
             # 2. Intentar cargar desde archivo local
             elif os.path.exists(self.session_file):
-                logger.info("[IG] Cargando sesión persistente local...")
+                logger.info("[IG-DEBUG] Cargando sesión persistente local (ig_session.json)...")
                 self.cl.load_settings(self.session_file)
             
-            logger.info(f"[IG] Conectando como {self.username}...")
+            logger.info(f"[IG-DEBUG] Ejecutando cl.login() para {self.username}...")
             self.cl.login(self.username, self.password)
             
             # Guardamos localmente siempre para tener el backup
             self.cl.dump_settings(self.session_file)
-            logger.info("[OK] Conexión exitosa.")
+            logger.info("[OK] Conexión a Instagram establecida correctamente.")
             return True
             
         except Exception as e:
-            logger.error(f"[IG] Error en login: {e}")
+            logger.error(f"[IG-ERROR] Falló el login: {e}")
+            if "ChallengeRequired" in str(e) or "checkpoint" in str(e).lower():
+                logger.error("[IG-FATAL] Instagram DETECTÓ el inicio de sesión y pide verificación (CHECKPOINT).")
+                logger.error("[IG-HELP] Por favor, entrá a tu Instagram desde el celu y marcá 'SÍ, FUI YO'. Después reiniciá el servicio en Railway.")
             return False
 
     def simulate_human(self):
@@ -100,7 +113,7 @@ class InstagramManager:
 
     def monitor_dms(self):
         """Bucle principal de monitoreo de mensajes."""
-        logger.info("[IG] Monitoreo de DMs activado.")
+        logger.info("[IG-READY] El bot está ONLINE y buscando mensajes no leídos...")
         
         # Contador para disparar actividades humanas aleatorias
         activity_counter = 0
@@ -114,38 +127,47 @@ class InstagramManager:
                     activity_counter = 0
 
                 # Obtenemos hilos no leídos
-                threads = self.cl.direct_threads(amount=10, selected_filter="unread")
+                logger.debug("[IG-DEBUG] Consultando hilos no leídos...")
+                threads = self.cl.direct_threads(amount=20, selected_filter="unread")
                 
+                if not threads:
+                    logger.debug("[IG-DEBUG] No hay mensajes nuevos.")
+
                 for thread in threads:
                     messages = thread.messages
                     if not messages: continue
                     
                     last_msg = messages[0]
                     if last_msg.item_type == 'text' and last_msg.user_id != self.cl.user_id:
-                        logger.info(f"[IG] Nuevo DM de {thread.thread_title}: {last_msg.text}")
+                        logger.info(f"[IG-EVENTO] Nuevo mensaje de {thread.thread_title}: '{last_msg.text}'")
                         
                         # 1. Tiempo de lectura
-                        time.sleep(random.uniform(4, 10))
+                        delay = random.uniform(3, 7)
+                        logger.info(f"[IG-DEBUG] Simulando lectura ({delay:.1f}s)...")
+                        time.sleep(delay)
                         
                         # 2. IA genera respuesta
+                        logger.info(f"[IG-DEBUG] Consultando al Agente de Ventas...")
                         response_data = sales_agent.process_message(last_msg.text, context="instagram")
                         response_text = response_data["text"]
                         
                         # 3. Tiempo de escritura
-                        writing_time = len(response_text) / 12
-                        time.sleep(min(writing_time, 8)) 
+                        writing_time = min(len(response_text) / 10, 6)
+                        logger.info(f"[IG-DEBUG] Simulando escritura ({writing_time:.1f}s)...")
+                        time.sleep(writing_time) 
                         
                         # 4. Responder
                         self.cl.direct_answer(thread.id, response_text)
-                        logger.info(f"[IG] Respondido a {thread.thread_title}")
+                        logger.info(f"[IG-OK] Respondido exitosamente a {thread.thread_title}")
                 
-                # Espera entre chequeos (Aleatoria para no ser patrón de bot)
-                wait_time = random.uniform(40, 100)
+                # Espera entre chequeos (Acortada para testing inicial)
+                wait_time = random.uniform(20, 50)
+                logger.debug(f"[IG-DEBUG] Esperando {wait_time:.1f}s para el próximo chequeo...")
                 time.sleep(wait_time)
                 
             except Exception as e:
-                logger.error(f"[IG] Error en el loop: {e}")
-                time.sleep(300)
+                logger.error(f"[IG-ERROR] Error en el loop de monitoreo: {e}")
+                time.sleep(120) # Si falla, esperar 2 minutos
 
 def run_instagram_bot():
     ig = InstagramManager()
