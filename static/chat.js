@@ -25,45 +25,50 @@ const initChat = () => {
 
     // Send Message
     const sendMessage = async () => {
-        const text = userInput.value.trim();
-        if (!text) return;
-
-        // User Message UI
-        appendMessage('user', text);
-        userInput.value = '';
-
-        // Bot Thinking indicator
-        const typingId = appendMessage('bot', '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>', true);
-
         try {
-            const response = await fetch(`${baseUrl}/chat`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: text, context: 'tienda' })
-            });
+            const text = userInput.value.trim();
+            if (!text) return;
 
-            const data = await response.json();
-            
-            // Remove typing indicator
-            document.getElementById(typingId).remove();
+            // User Message UI
+            appendMessage('user', text);
+            userInput.value = '';
 
-            // Bot Message UI
-            let botText = data.text;
-            // Si hay productos, nos aseguramos de que el texto no ensucie la pantalla
-            // y deje que la grilla horizontal sea la protagonista.
-            if (data.products && data.products.length > 0) {
-                botText = "¡Excelente! He encontrado estas opciones para ti:";
+            // Bot Thinking indicator
+            const typingId = appendMessage('bot', '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>', true);
+
+            try {
+                const response = await fetch(`${baseUrl}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, context: 'tienda' })
+                });
+
+                const data = await response.json();
+                
+                // Remove typing indicator
+                const typingEl = document.getElementById(typingId);
+                if (typingEl) typingEl.remove();
+
+                // Bot Message UI
+                let botText = data.text;
+                if (data.products && data.products.length > 0) {
+                    botText = "¡Excelente! He encontrado estas opciones para ti:";
+                }
+                appendMessage('bot', botText);
+
+                // Render Products if available
+                if (data.products && data.products.length > 0) {
+                    renderProducts(data.products);
+                }
+
+            } catch (innerError) {
+                console.error('❌ Error de conexión con Railway:', innerError);
+                const typingEl = document.getElementById(typingId);
+                if (typingEl) typingEl.innerHTML = 'Lo siento, hubo un error conectando con el asistente. Verificá tu conexión o si el servidor de Railway está activo.';
             }
-            appendMessage('bot', botText);
-
-            // Render Products if available
-            if (data.products && data.products.length > 0) {
-                renderProducts(data.products);
-            }
-
-        } catch (error) {
-            console.error('Error:', error);
-            document.getElementById(typingId).innerHTML = 'Lo siento, hubo un error conectando con el asistente.';
+        } catch (outerError) {
+            console.error('❌ Error fatal en el widget:', outerError);
+            alert("El asistente de ventas encontró un error interno. Por favor recarga la página.");
         }
     };
 
@@ -81,9 +86,13 @@ const initChat = () => {
         if (isHtml) {
             msgDiv.innerHTML = content;
         } else {
-            // Usando el motor de Marked para que todos los links [link](url)
-            // y fotos ![foto](url) se vuelvan clickeables automáticamente
-            msgDiv.innerHTML = marked.parse(content);
+            // SEGURIDAD: Si la librería 'marked' falla o no carga, usamos el texto normal
+            if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+                msgDiv.innerHTML = marked.parse(content);
+            } else {
+                console.warn("⚠️ [DEBUG] Librería 'marked' no disponible. Usando texto plano.");
+                msgDiv.textContent = content;
+            }
 
             // Aseguramos que todas las imágenes en el texto también sean links clickeables
             const images = msgDiv.querySelectorAll('img');
