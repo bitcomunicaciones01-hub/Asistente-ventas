@@ -25,7 +25,7 @@ class SalesAgent:
                 "   💰 $[Precio]\n"
                 "   👉 www.bitcomunicaciones.com/[ruta-del-producto]\n\n"
                 "5. Deja una línea vacía antes y después de la URL para que el celular lo detecte correctamente.\n"
-                "6. Si no encuentras el producto, ofrece WhatsApp con www.wa.me/543425482454"
+                "6. Si no encuentras el producto, ofrece WhatsApp con wa.me/+543425482454"
             )
         else:
             return (
