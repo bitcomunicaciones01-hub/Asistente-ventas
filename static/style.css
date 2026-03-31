@@ -28,7 +28,7 @@
 .chat-window {
     position: fixed;
     bottom: 1.5rem;
-    right: 1.5rem;
+    left: 1.5rem;
     width: 420px;
     height: calc(100% - 3rem);
     max-height: 750px;
@@ -282,7 +282,7 @@
 .chat-bubble {
     position: fixed;
     bottom: 2rem;
-    right: 2rem;
+    left: 2rem;
     width: 80px; /* Más grande a pedido del usuario */
     height: 80px;
     background: #ffffff;
@@ -380,7 +380,7 @@
         width: 92%;
         height: 75%; 
         bottom: 1rem;
-        right: 1rem;
+        left: 1rem;
         max-height: 600px;
         border-radius: 20px;
         border: 1px solid var(--glass-border);
@@ -388,7 +388,7 @@
 
     .chat-bubble {
         bottom: 1.5rem;
-        right: 1.5rem;
+        left: 1.5rem;
         width: 70px; /* Más grande en móvil */
         height: 70px;
         border-width: 2px;
