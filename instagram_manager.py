@@ -142,23 +142,29 @@ class InstagramManager:
                     self.simulate_human()
                     activity_counter = 0
 
-                # Obtenemos hilos no leídos
-                logger.debug("[IG-DEBUG] Consultando hilos no leídos...")
-                threads = self.cl.direct_threads(amount=20, selected_filter="unread")
+                # Obtenemos hilos: Principal (No leídos) + Solicitudes (Pending)
+                logger.debug("[IG-DEBUG] Consultando bandeja principal y solicitudes...")
                 
-                if not threads:
-                    logger.debug("[IG-DEBUG] No hay mensajes nuevos.")
+                # 1. Bandeja principal no leída
+                unread_threads = self.cl.direct_threads(amount=20, selected_filter="unread")
+                # 2. Solicitudes (Pending)
+                pending_threads = self.cl.direct_pending_inbox(amount=10)
+                
+                all_threads = unread_threads + pending_threads
+                
+                if not all_threads:
+                    logger.debug("[IG-DEBUG] No hay mensajes nuevos en ninguna carpeta.")
 
-                for thread in threads:
+                for thread in all_threads:
                     messages = thread.messages
                     if not messages: continue
                     
                     last_msg = messages[0]
-                    # IGNORAR si el mensaje es nuestro (evita bucles) usando nuestra variable propia
+                    # IGNORAR si el mensaje es nuestro (evita bucles)
                     is_self = str(last_msg.user_id) == self.my_user_id
                     
                     if last_msg.item_type == 'text' and not is_self:
-                        logger.info(f"[IG-EVENTO] Nuevo mensaje de {thread.thread_title} (ID:{last_msg.user_id}): '{last_msg.text}'")
+                        logger.info(f"[IG-EVENTO] Nuevo mensaje en '{thread.thread_title}': '{last_msg.text}'")
                         
                         # 1. Tiempo de lectura
                         delay = random.uniform(3, 7)
