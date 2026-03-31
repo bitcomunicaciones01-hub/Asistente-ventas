@@ -15,11 +15,13 @@
     display: block;
     position: relative;
     z-index: 99999;
+    color: #ffffff !important;
 }
 
 #sales-ai-widget-container * {
     box-sizing: border-box;
     font-family: 'Outfit', sans-serif;
+    color: inherit;
 }
 
 /* Chat Window - The WOW factor */
@@ -97,8 +99,9 @@
     font-size: 0.95rem;
     line-height: 1.5;
     animation: slideIn 0.4s ease-out;
-    overflow: visible; /* IMPORTANTE: Sin barras internas */
+    overflow: visible; 
     height: auto;
+    color: #ffffff !important; /* Forzamos blanco para los mensajes */
 }
 
 @keyframes slideIn {
@@ -318,13 +321,13 @@
 /* RESPONSIVIDAD MÓVIL (WOW Mobile Experience) */
 @media (max-width: 480px) {
     .chat-window {
-        width: 100%;
-        height: 100%;
-        bottom: 0;
-        right: 0;
-        max-height: none;
-        border-radius: 0;
-        border: none;
+        width: 85%; /* Menos ancho para móviles (a pedido del usuario) */
+        height: 70%; /* Menos alto */
+        bottom: 1rem;
+        right: 1rem;
+        max-height: 500px;
+        border-radius: 16px;
+        border: 1px solid var(--glass-border);
     }
 
     .chat-bubble {
