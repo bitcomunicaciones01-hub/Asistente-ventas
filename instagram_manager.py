@@ -85,9 +85,9 @@ class InstagramManager:
             logger.info(f"[IG-DEBUG] Ejecutando cl.login() para {self.username}...")
             self.cl.login(self.username, self.password)
             
-            # Recuperar y guardar el user_id explícitamente para evitar bucles
-            self.cl.user_id = self.cl.user_id or self.cl.user_info_by_username(self.username).pk
-            logger.info(f"[IG-DEBUG] Logueado con User ID: {self.cl.user_id}")
+            # Guardamos nuestro ID en una variable propia para evitar el error de 'no setter'
+            self.my_user_id = str(self.cl.user_id)
+            logger.info(f"[IG-DEBUG] Logueado con ID de Cuenta: {self.my_user_id}")
             
             # Guardamos localmente siempre para tener el backup
             self.cl.dump_settings(self.session_file)
@@ -146,8 +146,8 @@ class InstagramManager:
                     if not messages: continue
                     
                     last_msg = messages[0]
-                    # IGNORAR si el mensaje es nuestro (evita bucles)
-                    is_self = str(last_msg.user_id) == str(self.cl.user_id)
+                    # IGNORAR si el mensaje es nuestro (evita bucles) usando nuestra variable propia
+                    is_self = str(last_msg.user_id) == self.my_user_id
                     
                     if last_msg.item_type == 'text' and not is_self:
                         logger.info(f"[IG-EVENTO] Nuevo mensaje de {thread.thread_title} (ID:{last_msg.user_id}): '{last_msg.text}'")
