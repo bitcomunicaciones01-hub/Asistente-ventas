@@ -10,7 +10,10 @@ const initChat = () => {
     });
 
     let els = getElements();
-    if (!els.chatButton || !els.chatWindow) return;
+    // VERIFICACIÓN CRÍTICA: Si falta alguno, no iniciamos nada para evitar errores
+    if (!els.chatButton || !els.chatWindow || !els.sendBtn || !els.userInput || !els.chatMessages) {
+        return;
+    }
 
     // BASE URL de Railway (Si no está definida, usa local)
     const baseUrl = window.RAILWAY_URL || "";
@@ -91,8 +94,8 @@ const initChat = () => {
         }
     };
 
-    sendBtn.addEventListener('click', sendMessage);
-    userInput.addEventListener('keypress', (e) => {
+    els.sendBtn.addEventListener('click', sendMessage);
+    els.userInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendMessage();
     });
 
