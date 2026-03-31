@@ -11,8 +11,10 @@
 
 /* Estilos aislados para el widget de chat */
 #sales-ai-widget-container {
-    all: initial; /* Reseteamos para que el tema de WP no rompa el bot */
-    font-family: 'Outfit', sans-serif;
+    all: initial;
+    display: block;
+    position: relative;
+    z-index: 99999;
 }
 
 #sales-ai-widget-container * {
@@ -38,7 +40,7 @@
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
     overflow: hidden;
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1001;
+    z-index: 99999 !important;
 }
 
 .chat-window.hidden {
@@ -275,11 +277,11 @@
     color: white;
     cursor: pointer;
     box-shadow: 0 15px 30px rgba(99, 102, 241, 0.4);
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    z-index: 1000;
+    z-index: 99999 !important;
 }
 
 .chat-bubble:hover {
