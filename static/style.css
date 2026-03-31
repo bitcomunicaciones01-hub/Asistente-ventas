@@ -399,7 +399,8 @@
         font-size: 11px;
         padding: 4px 10px;
         display: block !important;
-        background: var(--primary-color) !important; /* Más sólido en móvil */
+        background: #a855f7 !important; /* Color sólido garantizado en móvil */
+        color: white !important;
     }
 
     .chat-messages {
