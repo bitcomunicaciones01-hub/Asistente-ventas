@@ -306,7 +306,7 @@
     left: 50%;
     transform: translateX(-50%);
     background: var(--primary-gradient);
-    color: white;
+    color: white !important; /* Forzamos blanco */
     padding: 6px 14px;
     border-radius: 20px;
     font-size: 13px;
@@ -314,6 +314,10 @@
     white-space: nowrap;
     box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
     animation: float 2s infinite ease-in-out;
+    z-index: 100001 !important; /* Capa superior absoluta */
+    display: block !important;
+    text-transform: none;
+    letter-spacing: normal;
 }
 
 .chat-label::after {
@@ -373,7 +377,7 @@
 /* RESPONSIVIDAD MÓVIL (WOW Mobile Experience) */
 @media (max-width: 480px) {
     .chat-window {
-        width: 92%; /* Ajustado para que sea cómodo */
+        width: 92%;
         height: 75%; 
         bottom: 1rem;
         right: 1rem;
@@ -385,8 +389,17 @@
     .chat-bubble {
         bottom: 1.5rem;
         right: 1.5rem;
-        width: 50px;
-        height: 50px;
+        width: 70px; /* Más grande en móvil */
+        height: 70px;
+        border-width: 2px;
+    }
+
+    .chat-label {
+        top: -35px;
+        font-size: 11px;
+        padding: 4px 10px;
+        display: block !important;
+        background: var(--primary-color) !important; /* Más sólido en móvil */
     }
 
     .chat-messages {
