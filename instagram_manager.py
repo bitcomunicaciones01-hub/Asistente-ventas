@@ -143,7 +143,7 @@ class InstagramManager:
                     activity_counter = 0
 
                 # Obtenemos hilos: Bypass Manual TOTAL (Principal + Solicitudes)
-                logger.debug("[IG-DEBUG] Consultando bandejas (Bypass Manual v13.0)...")
+                logger.info("[IG-DEBUG] Consultando bandejas (v13.2)...")
                 
                 all_threads_data = []
 
@@ -153,6 +153,7 @@ class InstagramManager:
                     if res_inbox.get("status") == "ok":
                         inbox = res_inbox.get("inbox", {})
                         threads = inbox.get("threads", [])
+                        logger.info(f"[IG-DEBUG] Inbox Principal: {len(threads)} hilos no leídos encontrados.")
                         for t in threads:
                             items = t.get("items", [])
                             if items:
@@ -170,8 +171,16 @@ class InstagramManager:
                 try:
                     res_pend = self.cl.private_request("direct_v2/pending_inbox/")
                     if res_pend.get("status") == "ok":
+                        # DIAGNÓSTICO: Ver qué hay adentro si threads está vacío
                         inbox_p = res_pend.get("inbox", {})
-                        threads_p = inbox_p.get("threads", [])
+                        threads_p = res_pend.get("inbox", {}).get("threads", [])
+                        
+                        logger.info(f"[IG-DEBUG] Solicitudes (Pending): {len(threads_p)} hilos encontrados.")
+                        if not threads_p:
+                            logger.info(f"[IG-DEBUG] Campos en respuesta Pending: {res_pend.keys()}")
+                            if "inbox" in res_pend:
+                                logger.info(f"[IG-DEBUG] Campos en 'inbox': {res_pend['inbox'].keys()}")
+                        
                         for tp in threads_p:
                             items_p = tp.get("items", [])
                             if items_p:
