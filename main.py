@@ -42,12 +42,13 @@ async def chat_with_agent(chat: ChatMessage):
 
 @app.on_event("startup")
 async def startup_event():
-    """Inicia el monitoreo de Instagram automáticamente al arrancar el servidor."""
-    from threading import Thread
-    print("[INFO] Iniciando monitoreo de Instagram en segundo plano...")
-    thread = Thread(target=run_instagram_bot)
-    thread.daemon = True
-    thread.start()
+    """Modo Seguro: El monitoreo de Instagram está desactivado para evitar bloqueos."""
+    print("[SAFE MODE] El bot de Instagram está desactivado temporalmente.")
+    # from threading import Thread
+    # print("[INFO] Iniciando monitoreo de Instagram en segundo plano...")
+    # thread = Thread(target=run_instagram_bot)
+    # thread.daemon = True
+    # thread.start()
 
 if __name__ == "__main__":
     import uvicorn
