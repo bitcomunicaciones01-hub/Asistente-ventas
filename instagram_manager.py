@@ -142,30 +142,16 @@ class InstagramManager:
                     self.simulate_human()
                     activity_counter = 0
 
-                # Obtenemos hilos: Principal (No leídos) + Solicitudes (Manual Bypass)
-                logger.debug("[IG-DEBUG] Consultando bandejas...")
+                # Obtenemos hilos: Bypass Manual TOTAL (Principal + Solicitudes)
+                logger.debug("[IG-DEBUG] Consultando bandejas (Bypass Manual v13.0)...")
                 
                 all_threads_data = []
 
-                # 1. Intentar Bandeja principal (Filtro normal)
+                # 1. Bypass Manual: Bandeja Principal (Inbox)
                 try:
-                    unread_threads = self.cl.direct_threads(amount=20, selected_filter="unread")
-                    for t in unread_threads:
-                        if t.messages:
-                            all_threads_data.append({
-                                "id": t.id,
-                                "title": t.thread_title,
-                                "text": t.messages[0].text,
-                                "user_id": str(t.messages[0].user_id)
-                            })
-                except Exception as te:
-                    logger.warning(f"[IG-DEBUG] Error en inbox principal: {te}")
-                
-                # 2. Intentar Solicitudes (MANUAL BYPASS para evitar error Pydantic)
-                try:
-                    res = self.cl.private_request("direct_v2/pending_inbox/")
-                    if res.get("status") == "ok":
-                        inbox = res.get("inbox", {})
+                    res_inbox = self.cl.private_request("direct_v2/inbox/", params={"selected_filter": "unread"})
+                    if res_inbox.get("status") == "ok":
+                        inbox = res_inbox.get("inbox", {})
                         threads = inbox.get("threads", [])
                         for t in threads:
                             items = t.get("items", [])
@@ -173,13 +159,31 @@ class InstagramManager:
                                 last_msg = items[0]
                                 all_threads_data.append({
                                     "id": t.get("thread_id"),
-                                    "title": t.get("thread_title", "Desconocido"),
+                                    "title": t.get("thread_title", "Chat"),
                                     "text": last_msg.get("text", ""),
                                     "user_id": str(last_msg.get("user_id"))
                                 })
-                        logger.debug(f"[IG-DEBUG] Bypass manual encontró {len(threads)} hilos en solicitudes.")
+                except Exception as ie:
+                    logger.warning(f"[IG-DEBUG] Error en bypass de Inbox: {ie}")
+                
+                # 2. Bypass Manual: Solicitudes (Pending)
+                try:
+                    res_pend = self.cl.private_request("direct_v2/pending_inbox/")
+                    if res_pend.get("status") == "ok":
+                        inbox_p = res_pend.get("inbox", {})
+                        threads_p = inbox_p.get("threads", [])
+                        for tp in threads_p:
+                            items_p = tp.get("items", [])
+                            if items_p:
+                                last_msg_p = items_p[0]
+                                all_threads_data.append({
+                                    "id": tp.get("thread_id"),
+                                    "title": tp.get("thread_title", "Solicitud"),
+                                    "text": last_msg_p.get("text", ""),
+                                    "user_id": str(last_msg_p.get("user_id"))
+                                })
                 except Exception as pe:
-                    logger.warning(f"[IG-DEBUG] Error en bypass manual de solicitudes: {pe}")
+                    logger.warning(f"[IG-DEBUG] Error en bypass de Pending: {pe}")
                 
                 if not all_threads_data:
                     logger.debug("[IG-DEBUG] No hay mensajes nuevos procesables.")
