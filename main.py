@@ -44,7 +44,7 @@ async def chat_with_agent(chat: ChatMessage):
 async def startup_event():
     """Inicia el monitoreo de Instagram automáticamente al arrancar el servidor."""
     from threading import Thread
-    print("🚀 Iniciando monitoreo de Instagram en segundo plano...")
+    print("[INFO] Iniciando monitoreo de Instagram en segundo plano...")
     thread = Thread(target=run_instagram_bot)
     thread.daemon = True
     thread.start()

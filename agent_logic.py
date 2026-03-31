@@ -19,6 +19,7 @@ class SalesAgent:
                 "Diles algo como: 'Para darte una atención más personalizada, te invito a hablar con nuestro equipo por WhatsApp'. "
                 "El link de WhatsApp que debes usar es: https://wa.me/543425482454?text=Hola,%20necesito%20asesoramiento%20sobre..."
             )
+        else:
             return (
                 "Eres un asistente de ventas de una tienda WooCommerce. "
                 "Tu única misión es guiar al usuario de forma amable y profesional. "

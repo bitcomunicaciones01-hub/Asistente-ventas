@@ -17,20 +17,24 @@ class InstagramManager:
 
     def login(self):
         """Login seguro con persistencia de sesión para evitar bloqueos."""
-        if os.path.exists(self.session_file):
-            print("[IG] Cargando sesión persistente...")
-            try:
+        try:
+            if os.path.exists(self.session_file):
+                print("[IG] Cargando sesión persistente...")
                 self.cl.load_settings(self.session_file)
-                self.cl.login(self.username, self.password)
-            except Exception as e:
-                print(f"[IG] Error cargando sesión: {e}. Intentando login normal.")
-                self.cl.login(self.username, self.password)
-        else:
-            print("[IG] Realizando primer login...")
+            
+            # Intentar login (instagrapi usa la sesión cargada si existe)
+            print(f"[IG] Intentando conectar como {self.username}...")
             self.cl.login(self.username, self.password)
+            
+            # Guardamos la sesión después del éxito
             self.cl.dump_settings(self.session_file)
-        
-        print(f"[IG] Conectado como {self.username}")
+            print(f"[IG] Conectado exitosamente.")
+            
+        except Exception as e:
+            print(f"[IG] Error crítico en login: {e}")
+            if "JSONDecodeError" in str(e):
+                print("[IG] Instagram bloqueó la petición (Challenge). Reintentando en unos minutos...")
+            raise e
 
     def monitor_dms(self):
         """Escucha mensajes directos y responde con el Cerebro GPT."""
