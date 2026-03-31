@@ -126,8 +126,8 @@ class InstagramManager:
     def monitor_dms(self):
         """Bucle principal de monitoreo de mensajes."""
         print("\n" + "="*50)
-        print("🚀 [IG-VERSION] v12.4 - BOT FUNCIONANDO Y ACTUALIZADO")
-        print("   -> ARREGLO DE BUCLES ACTIVADO")
+        print("🚀 [IG-VERSION] v12.9 - BYPASS MANUAL ACTIVADO")
+        print("   -> LEYENDO SOLICITUDES DIRECTAMENTE")
         print("="*50 + "\n")
         logger.info("[IG-READY] El bot está ONLINE y buscando mensajes no leídos...")
         
@@ -142,39 +142,55 @@ class InstagramManager:
                     self.simulate_human()
                     activity_counter = 0
 
-                # Obtenemos hilos: Principal (No leídos) + Solicitudes (Pending)
+                # Obtenemos hilos: Principal (No leídos) + Solicitudes (Manual Bypass)
                 logger.debug("[IG-DEBUG] Consultando bandejas...")
                 
-                all_threads = []
+                all_threads_data = []
 
-                # 1. Intentar Bandeja principal
+                # 1. Intentar Bandeja principal (Filtro normal)
                 try:
                     unread_threads = self.cl.direct_threads(amount=20, selected_filter="unread")
-                    all_threads.extend(unread_threads)
+                    for t in unread_threads:
+                        if t.messages:
+                            all_threads_data.append({
+                                "id": t.id,
+                                "title": t.thread_title,
+                                "text": t.messages[0].text,
+                                "user_id": str(t.messages[0].user_id)
+                            })
                 except Exception as te:
-                    logger.warning(f"[IG-DEBUG] Error al leer inbox principal (posible cambio de Instagram): {te}")
+                    logger.warning(f"[IG-DEBUG] Error en inbox principal: {te}")
                 
-                # 2. Intentar Solicitudes (Pending)
+                # 2. Intentar Solicitudes (MANUAL BYPASS para evitar error Pydantic)
                 try:
-                    pending_threads = self.cl.direct_pending_inbox(amount=10)
-                    all_threads.extend(pending_threads)
+                    res = self.cl.private_request("direct_v2/pending_inbox/")
+                    if res.get("status") == "ok":
+                        inbox = res.get("inbox", {})
+                        threads = inbox.get("threads", [])
+                        for t in threads:
+                            items = t.get("items", [])
+                            if items:
+                                last_msg = items[0]
+                                all_threads_data.append({
+                                    "id": t.get("thread_id"),
+                                    "title": t.get("thread_title", "Desconocido"),
+                                    "text": last_msg.get("text", ""),
+                                    "user_id": str(last_msg.get("user_id"))
+                                })
+                        logger.debug(f"[IG-DEBUG] Bypass manual encontró {len(threads)} hilos en solicitudes.")
                 except Exception as pe:
-                    logger.warning(f"[IG-DEBUG] Error al leer solicitudes pending: {pe}")
+                    logger.warning(f"[IG-DEBUG] Error en bypass manual de solicitudes: {pe}")
                 
-                if not all_threads:
+                if not all_threads_data:
                     logger.debug("[IG-DEBUG] No hay mensajes nuevos procesables.")
 
-                for thread in all_threads:
+                for td in all_threads_data:
                     try:
-                        messages = thread.messages
-                        if not messages: continue
-                        
-                        last_msg = messages[0]
                         # IGNORAR si el mensaje es nuestro (evita bucles)
-                        is_self = str(last_msg.user_id) == self.my_user_id
+                        is_self = td["user_id"] == self.my_user_id
                         
-                        if last_msg.item_type == 'text' and not is_self:
-                            logger.info(f"[IG-EVENTO] Nuevo mensaje en '{thread.thread_title}': '{last_msg.text}'")
+                        if td["text"] and not is_self:
+                            logger.info(f"[IG-EVENTO] Nuevo mensaje en '{td['title']}': '{td['text']}'")
                             
                             # 1. Tiempo de lectura
                             delay = random.uniform(3, 7)
@@ -183,7 +199,7 @@ class InstagramManager:
                             
                             # 2. IA genera respuesta
                             logger.info(f"[IG-DEBUG] Consultando al Agente de Ventas...")
-                            response_data = sales_agent.process_message(last_msg.text, context="instagram")
+                            response_data = sales_agent.process_message(td["text"], context="instagram")
                             response_text = response_data["text"]
                             
                             # 3. Tiempo de escritura
@@ -192,8 +208,8 @@ class InstagramManager:
                             time.sleep(writing_time) 
                             
                             # 4. Responder
-                            self.cl.direct_answer(thread.id, response_text)
-                            logger.info(f"[IG-OK] Respondido exitosamente a {thread.thread_title}")
+                            self.cl.direct_answer(td["id"], response_text)
+                            logger.info(f"[IG-OK] Respondido exitosamente a {td['title']}")
                     except Exception as th_err:
                         logger.error(f"[IG-ERROR] Error al procesar hilo individual: {th_err}")
                 
