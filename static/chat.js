@@ -147,10 +147,10 @@ const initChat = () => {
             });
         }
         
-        chatMessages.appendChild(msgDiv);
+        els.chatMessages.appendChild(msgDiv);
         
         // Scroll inmediato
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        els.chatMessages.scrollTop = els.chatMessages.scrollHeight;
         
         return id;
     }
@@ -177,11 +177,11 @@ const initChat = () => {
             carousel.appendChild(card);
         });
         
-        chatMessages.appendChild(carousel);
+        els.chatMessages.appendChild(carousel);
         
         // Scroll suave al final
         setTimeout(() => {
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            els.chatMessages.scrollTop = els.chatMessages.scrollHeight;
         }, 150);
     }
 };
