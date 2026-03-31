@@ -117,6 +117,10 @@ class InstagramManager:
 
     def monitor_dms(self):
         """Bucle principal de monitoreo de mensajes."""
+        print("\n" + "="*50)
+        print("🚀 [IG-VERSION] v12.4 - BOT FUNCIONANDO Y ACTUALIZADO")
+        print("   -> ARREGLO DE BUCLES ACTIVADO")
+        print("="*50 + "\n")
         logger.info("[IG-READY] El bot está ONLINE y buscando mensajes no leídos...")
         
         # Contador para disparar actividades humanas aleatorias
