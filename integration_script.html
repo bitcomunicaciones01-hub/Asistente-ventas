@@ -1,0 +1,35 @@
+<!-- SCRIPT DE INTEGRACIÓN: ASISTENTE DE VENTAS AI -->
+<!-- Instrucciones: Copia este código y pégalo antes del cierre de la etiqueta </body> en tu WordPress (Header & Footer plugin) -->
+
+<div id="sales-ai-widget-container"></div>
+<script>
+    (function() {
+        // REEMPLAZAR CON TU URL DE RAILWAY CUANDO ESTÉ LISTO
+        const RAILWAY_URL = "http://localhost:8000"; 
+
+        const container = document.getElementById('sales-ai-widget-container');
+        fetch(`${RAILWAY_URL}/static/index.html`)
+            .then(response => response.text())
+            .then(html => {
+                // Inyectamos el HTML de forma segura
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Cargamos el CSS de Railway
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = `${RAILWAY_URL}/static/style.css`;
+                document.head.appendChild(link);
+
+                // Cargamos el Script de Railway
+                const script = document.createElement('script');
+                script.src = `${RAILWAY_URL}/static/chat.js`;
+                script.defer = true;
+                
+                // Inyectamos el contenido del body del widget
+                const widgetBody = doc.body.innerHTML;
+                container.innerHTML = widgetBody;
+                document.body.appendChild(script);
+            });
+    })();
+</script>
