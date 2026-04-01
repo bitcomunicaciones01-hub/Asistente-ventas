@@ -154,12 +154,26 @@ class InstagramManager:
                     unread_threads = self.cl.direct_threads(amount=20, selected_filter="unread")
                     for t in unread_threads:
                         if t.messages:
+                            msg = t.messages[0]
+                            raw_item_dict = msg.dict()
+                            
+                            # Si detectamos que es voz en el objeto, pero instagrapi borró la URL, la rescatamos directo de la vena (JSON puro)
+                            if msg.item_type == "voice_media":
+                                try:
+                                    logger.info(f"[IG-DEBUG] Nota de voz detectada en Inbox. Descargando JSON crudo para extraer URL...")
+                                    raw_td = self.cl.private_request(f"direct_v2/threads/{t.id}/")
+                                    raw_items = raw_td.get("thread", {}).get("items", [])
+                                    if raw_items:
+                                        raw_item_dict = raw_items[0]
+                                except Exception as e_raw:
+                                    logger.error(f"[IG-DEBUG] No se pudo recuperar el audio puro: {e_raw}")
+
                             all_threads_data.append({
                                 "id": t.id,
                                 "title": t.thread_title,
-                                "text": t.messages[0].text,
-                                "user_id": str(t.messages[0].user_id),
-                                "raw_item": t.messages[0].dict()
+                                "text": msg.text,
+                                "user_id": str(msg.user_id),
+                                "raw_item": raw_item_dict
                             })
                 except Exception as te:
                     logger.warning(f"[IG-DEBUG] Error en inbox principal: {te}")
