@@ -45,8 +45,12 @@ async def chat_with_agent(chat: ChatMessage):
 async def chat_with_audio(audio: UploadFile = File(...), context: str = Form("tienda")):
     """Procesa un mensaje de audio (transcribe con Whisper y delega a Agente)."""
     try:
+        # Extraer extensión original para que Whisper decodifique correctamente (Apple envía mp4/m4a, Android/PC webm)
+        ext = os.path.splitext(audio.filename)[1] if audio.filename else ".webm"
+        if not ext: ext = ".webm"
+        
         # 1. Guardar temporalmente el archivo de audio
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
             tmp.write(await audio.read())
             tmp_path = tmp.name
 
@@ -55,7 +59,8 @@ async def chat_with_audio(audio: UploadFile = File(...), context: str = Form("ti
             transcription = sales_agent.client.audio.transcriptions.create(
                 model="whisper-1",
                 file=audio_file,
-                language="es"
+                language="es",
+                prompt="Contexto estricto del audio: repuestos de notebook, netbook, pantalla, batería, teclado, disco sólido, memoria RAM, informática, electrónica, pin de carga, placa madre, mother."
             )
         recognized_text = transcription.text
 

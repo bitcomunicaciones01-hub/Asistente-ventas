@@ -245,7 +245,8 @@ class InstagramManager:
                                         transcription = sales_agent.client.audio.transcriptions.create(
                                             model="whisper-1",
                                             file=af_file,
-                                            language="es"
+                                            language="es",
+                                            prompt="Contexto estricto del audio: repuestos de notebook, netbook, pantalla, batería, teclado, disco sólido, memoria RAM, informática, electrónica, pin de carga, placa madre, mother."
                                         )
                                     td["text"] = "🎙️ " + transcription.text
                                     os.unlink(tmp_path)

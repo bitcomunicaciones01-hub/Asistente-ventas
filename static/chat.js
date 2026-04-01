@@ -64,8 +64,11 @@ const initChat = () => {
                     };
 
                     mediaRecorder.onstop = async () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                        sendAudioMessage(audioBlob);
+                        let ext = 'webm';
+                        if (mediaRecorder.mimeType.includes('mp4')) ext = 'm4a';
+                        if (mediaRecorder.mimeType.includes('ogg')) ext = 'ogg';
+                        const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
+                        sendAudioMessage(audioBlob, ext);
                     };
 
                     mediaRecorder.start();
@@ -92,11 +95,11 @@ const initChat = () => {
         });
     }
 
-    const sendAudioMessage = async (audioBlob) => {
+    const sendAudioMessage = async (audioBlob, ext = 'webm') => {
         try {
             els = getElements();
             const formData = new FormData();
-            formData.append('audio', audioBlob, 'voice.webm');
+            formData.append('audio', audioBlob, `voice.${ext}`);
             formData.append('context', 'tienda');
 
             // Renderizar un spinner mientras procesa (simula un mensaje de bot)
