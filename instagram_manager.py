@@ -200,18 +200,23 @@ class InstagramManager:
                         # IGNORAR si el mensaje es nuestro (evita bucles)
                         is_self = td["user_id"] == self.my_user_id
                         
-                        # Fase 3: Detección y transcripción de audios (v14.0)
+                        # Fase 3: Detección y transcripción de audios (v14.1 Fix)
                         raw = td.get("raw_item", {})
                         item_type = raw.get("item_type")
                         audio_url = None
                         
-                        if item_type == "voice_media":
-                            # Buscar en el dict parseado por instagrapi (Main Inbox)
-                            if raw.get("clip") and raw["clip"].get("video_url"):
-                                audio_url = raw["clip"]["video_url"]
-                            # Buscar en el JSON puro (Pending Inbox)
-                            elif raw.get("voice_media", {}).get("media", {}).get("audio", {}).get("audio_src"):
-                                audio_url = raw["voice_media"]["media"]["audio"]["audio_src"]
+                        logger.info(f"[IG-DIAGNOSTICO] Tipo de item: {item_type} | llaves crudas: {list(raw.keys())}")
+                        
+                        # Buscar en el dict parseado por instagrapi (Main Inbox)
+                        if raw.get("clip") and isinstance(raw["clip"], dict) and raw["clip"].get("video_url"):
+                            audio_url = raw["clip"]["video_url"]
+                            logger.info("[IG-DEBUG] URL de audio encontrada bajo atributo 'clip'")
+                        # Buscar en el JSON puro (Pending Inbox)
+                        elif raw.get("voice_media") and isinstance(raw["voice_media"], dict):
+                            audio = raw["voice_media"].get("media", {}).get("audio", {})
+                            if audio.get("audio_src"):
+                                audio_url = audio["audio_src"]
+                                logger.info("[IG-DEBUG] URL de audio encontrada bajo atributo 'voice_media'")
                                 
                         if audio_url and not is_self:
                             logger.info(f"[IG-AUDIO] Detectada nota de voz en '{td['title']}', extrayendo url...")
