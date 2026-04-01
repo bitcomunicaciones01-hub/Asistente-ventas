@@ -244,7 +244,8 @@ class InstagramManager:
                                     with open(tmp_path, "rb") as af_file:
                                         transcription = sales_agent.client.audio.transcriptions.create(
                                             model="whisper-1",
-                                            file=af_file
+                                            file=af_file,
+                                            language="es"
                                         )
                                     td["text"] = "🎙️ " + transcription.text
                                     os.unlink(tmp_path)

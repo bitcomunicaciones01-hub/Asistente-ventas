@@ -137,8 +137,14 @@ const initChat = () => {
         }
     };
 
-    // Send Message (Text)
+    // Send Message (Text o Detener Audio)
     const sendMessage = async () => {
+        if (isRecording) {
+            // El usuario apretó la flecha mientras grababa. Detenemos y mandamos el audio.
+            els.micBtn.click();
+            return;
+        }
+
         try {
             els = getElements();
             const text = els.userInput.value.trim();
