@@ -158,7 +158,8 @@ class InstagramManager:
                                 "id": t.id,
                                 "title": t.thread_title,
                                 "text": t.messages[0].text,
-                                "user_id": str(t.messages[0].user_id)
+                                "user_id": str(t.messages[0].user_id),
+                                "raw_item": t.messages[0].dict()
                             })
                 except Exception as te:
                     logger.warning(f"[IG-DEBUG] Error en inbox principal: {te}")
@@ -185,7 +186,8 @@ class InstagramManager:
                                     "id": tp.get("thread_id"),
                                     "title": tp.get("thread_title", "Solicitud"),
                                     "text": last_msg_p.get("text", ""),
-                                    "user_id": str(last_msg_p.get("user_id"))
+                                    "user_id": str(last_msg_p.get("user_id")),
+                                    "raw_item": last_msg_p
                                 })
                 except Exception as pe:
                     logger.warning(f"[IG-DEBUG] Error en bypass de Pending: {pe}")
@@ -198,6 +200,42 @@ class InstagramManager:
                         # IGNORAR si el mensaje es nuestro (evita bucles)
                         is_self = td["user_id"] == self.my_user_id
                         
+                        # Fase 3: Detección y transcripción de audios (v14.0)
+                        raw = td.get("raw_item", {})
+                        item_type = raw.get("item_type")
+                        audio_url = None
+                        
+                        if item_type == "voice_media":
+                            # Buscar en el dict parseado por instagrapi (Main Inbox)
+                            if raw.get("clip") and raw["clip"].get("video_url"):
+                                audio_url = raw["clip"]["video_url"]
+                            # Buscar en el JSON puro (Pending Inbox)
+                            elif raw.get("voice_media", {}).get("media", {}).get("audio", {}).get("audio_src"):
+                                audio_url = raw["voice_media"]["media"]["audio"]["audio_src"]
+                                
+                        if audio_url and not is_self:
+                            logger.info(f"[IG-AUDIO] Detectada nota de voz en '{td['title']}', extrayendo url...")
+                            try:
+                                audio_res = requests.get(audio_url, timeout=10)
+                                if audio_res.status_code == 200:
+                                    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp_af:
+                                        tmp_af.write(audio_res.content)
+                                        tmp_path = tmp_af.name
+                                        
+                                    with open(tmp_path, "rb") as af_file:
+                                        transcription = sales_agent.client.audio.transcriptions.create(
+                                            model="whisper-1",
+                                            file=af_file
+                                        )
+                                    td["text"] = "🎙️ " + transcription.text
+                                    os.unlink(tmp_path)
+                                    logger.info(f"[IG-AUDIO] Transcripción exitosa: '{td['text']}'")
+                            except Exception as audio_err:
+                                logger.error(f"[IG-AUDIO] Operación de escucha fallida: {audio_err}")
+                                if 'tmp_path' in locals() and os.path.exists(tmp_path):
+                                    os.unlink(tmp_path)
+                                td["text"] = "🎙️ [Error: nota de voz ininteligible]"
+
                         logger.info(f"[IG-DIAGNOSTICO] Analizando hilo '{td['title']}' | is_self: {is_self} ({td['user_id']} vs {self.my_user_id}) | text: '{td['text']}'")
                         
                         if td["text"] and not is_self:

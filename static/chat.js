@@ -5,6 +5,7 @@ const initChat = () => {
         chatWindow: document.getElementById('chat-window'),
         closeChat: document.getElementById('close-chat'),
         sendBtn: document.getElementById('send-btn'),
+        micBtn: document.getElementById('mic-btn'),
         userInput: document.getElementById('user-input'),
         chatMessages: document.getElementById('chat-messages')
     });
@@ -44,7 +45,99 @@ const initChat = () => {
         });
     }
 
-    // Send Message
+    // Audio Recording Logic v14.0
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
+
+    if (els.micBtn) {
+        els.micBtn.addEventListener('click', async () => {
+            els = getElements();
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = e => {
+                        if (e.data.size > 0) audioChunks.push(e.data);
+                    };
+
+                    mediaRecorder.onstop = async () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        sendAudioMessage(audioBlob);
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    els.micBtn.style.backgroundColor = 'rgba(255, 60, 60, 0.8)';
+                    els.micBtn.innerHTML = '🛑';
+                    els.userInput.disabled = true;
+                    els.userInput.placeholder = "Grabando nota de voz...";
+
+                } catch (err) {
+                    console.error("Error al acceder al micrófono:", err);
+                    alert("Por favor habilita el acceso al micrófono en tu navegador para enviar audios.");
+                }
+            } else {
+                // Parar grabación
+                mediaRecorder.stop();
+                isRecording = false;
+                els.micBtn.style.backgroundColor = 'transparent';
+                els.micBtn.innerHTML = '🎤';
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                els.userInput.disabled = false;
+                els.userInput.placeholder = "Procesando audio...";
+            }
+        });
+    }
+
+    const sendAudioMessage = async (audioBlob) => {
+        try {
+            els = getElements();
+            const formData = new FormData();
+            formData.append('audio', audioBlob, 'voice.webm');
+            formData.append('context', 'tienda');
+
+            // Renderizar un spinner mientras procesa (simula un mensaje de bot)
+            const typingId = appendMessage('bot', '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>', true);
+
+            const response = await fetch(`${baseUrl}/chat/audio`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            
+            // Eliminar spinner
+            const typingEl = document.getElementById(typingId);
+            if (typingEl) typingEl.remove();
+
+            // Mostramos lo que escuchó Whisper como si fuera un mensaje del usuario
+            if (data.recognized_text) {
+                appendMessage('user', '🎙️ ' + data.recognized_text);
+            }
+
+            // Renderizar la respuesta bot (Texto y productos)
+            let botText = data.text;
+            if (data.products && data.products.length > 0) {
+                botText = "¡Excelente! He encontrado estas opciones para ti:";
+            }
+            appendMessage('bot', botText);
+
+            if (data.products && data.products.length > 0) {
+                renderProducts(data.products);
+            }
+            
+            els.userInput.placeholder = "Pregúntame algo...";
+        } catch (err) {
+            console.error('Error enviando nota de voz:', err);
+            els.userInput.placeholder = "Pregúntame algo...";
+            alert("Error de conexión al procesar el audio.");
+        }
+    };
+
+    // Send Message (Text)
     const sendMessage = async () => {
         try {
             els = getElements();

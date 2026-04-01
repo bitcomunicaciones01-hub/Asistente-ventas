@@ -1,5 +1,6 @@
 import os
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+import tempfile
+from fastapi import FastAPI, HTTPException, BackgroundTasks, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -38,6 +39,41 @@ async def chat_with_agent(chat: ChatMessage):
         response = sales_agent.process_message(chat.message, chat.context)
         return response
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/chat/audio")
+async def chat_with_audio(audio: UploadFile = File(...), context: str = Form("tienda")):
+    """Procesa un mensaje de audio (transcribe con Whisper y delega a Agente)."""
+    try:
+        # 1. Guardar temporalmente el archivo de audio
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
+            tmp.write(await audio.read())
+            tmp_path = tmp.name
+
+        # 2. Transcribir con OpenAI Whisper usando el cliente ya existente del agente
+        with open(tmp_path, "rb") as audio_file:
+            transcription = sales_agent.client.audio.transcriptions.create(
+                model="whisper-1",
+                file=audio_file
+            )
+        recognized_text = transcription.text
+
+        # 3. Limpiar temporal
+        os.unlink(tmp_path)
+
+        if not recognized_text:
+            raise HTTPException(status_code=400, detail="No se pudo interpretar el audio.")
+
+        # 4. Procesar el texto resultante
+        response = sales_agent.process_message(recognized_text, context)
+        
+        # Adjuntamos el texto que interpretó la IA para mostrarlo en el frontend
+        response["recognized_text"] = recognized_text
+        return response
+
+    except Exception as e:
+        if 'tmp_path' in locals() and os.path.exists(tmp_path):
+            os.unlink(tmp_path)
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.on_event("startup")
