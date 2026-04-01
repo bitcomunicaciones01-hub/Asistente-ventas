@@ -12,8 +12,20 @@ class SalesAgent:
         self.model = "gpt-4o-mini" # Modelo económico y potente
 
     def _get_system_prompt(self, context="tienda"):
+        knowledge_base = (
+            "--- BASE DE CONOCIMIENTO (FAQ) DE LA TIENDA ---\n"
+            "Nombre: BIT Comunicaciones (Venta de Repuestos y Servicio Técnico)\n"
+            "Ubicación: Moreno 3583, Santa Fe, Argentina. WhatsApp: 3425482454\n"
+            "Envíos: Hacemos envíos a todo el país mediante Correo Argentino o transporte a acordar.\n"
+            "Pagos: Aceptamos Transferencia Bancaria (Alias: bitcomunicaciones.f) y MercadoPago.\n"
+            "Garantía: Todos los repuestos son estrictamente testeados y cuentan con 1 mes de prueba técnica con opción a reembolso o cambio si hay fallas de hardware.\n"
+            "Servicio Técnico: Reparación de Notebooks, PC, PS, Celulares. Reballing, limpieza, upgrades y microsoldadura.\n"
+            "REGLA FAQ: Si el usuario pregunta por envíos, pagos, ubicación o garantías, responde de forma amigable basándote ÚNICAMENTE en esta Base de Conocimiento.\n"
+            "-----------------------------------------------\n\n"
+        )
+        
         if context == "instagram":
-            return (
+            return knowledge_base + (
                 "Eres un asistente de ventas experto en Instagram para 'BIT Comunicaciones'. "
                 "Tu objetivo es ser amable y persuasivo para cerrar ventas de repuestos. "
                 "REGLAS OBLIGATORIAS DE FORMATO:\n"
@@ -28,7 +40,7 @@ class SalesAgent:
                 "6. Si no hay stock o no encuentras el producto exacto, dile amablemente que actualmente no hay stock y ofrécele contactar por WhatsApp (api.whatsapp.com/send?phone=543425482454) por si llega a ingresar."
             )
         else:
-            return (
+            return knowledge_base + (
                 "Eres un asistente de ventas de una tienda WooCommerce. "
                 "Tu única misión es guiar al usuario de forma amable y profesional. "
                 "REGLA DE ORO DE VISUALIZACIÓN: Está TERMINANTEMENTE PROHIBIDO usar listas numeradas (1., 2., 3...) o viñetas. "
