@@ -60,7 +60,7 @@ async def chat_with_audio(audio: UploadFile = File(...), context: str = Form("ti
                 model="whisper-1",
                 file=audio_file,
                 language="es",
-                prompt="Contexto estricto del audio: repuestos de notebook, netbook, pantalla, batería, teclado, disco sólido, memoria RAM, informática, electrónica, pin de carga, placa madre, mother."
+                prompt="Contexto estricto del audio: repuestos de notebook, netbook, pantalla, batería, teclado, disco sólido, memoria RAM, informática, electrónica, pin de carga, placa madre, mother. Marcas: Banghó, Positivo BGH, Noblex, Lenovo, HP, Dell, Asus, Acer, Samsung, Toshiba, Sony Vaio, CX, carcasa, tapa, palmrest, display, flex, bisagras."
             )
         recognized_text = transcription.text
 
