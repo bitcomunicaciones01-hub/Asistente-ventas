@@ -47,7 +47,7 @@ class SalesAgent:
                 "Si la herramienta te devuelve productos, tu respuesta DEBE SER únicamente una frase corta como: '¡Mirá estas opciones que encontré para vos!'. "
                 "NUNCA describas los productos en el texto, el sistema ya los muestra en la grilla horizontal de 3.\n"
                 "Sé servicial y persuasivo. Usa emojis.\n"
-                "SI NO HAY RESULTADOS: Dile que por el momento no hay stock de ese repuesto y sugiérele contactar con un humano por WhatsApp: api.whatsapp.com/send?phone=543425482454 por si aparecen nuevos."
+                "SI NO HAY RESULTADOS: Debes responder EXACTAMENTE y únicamente con este texto: 'Ups no lo tenemos en este momento, pero te podes comunicar al 3425482454 para encargarlo o para avisar cuando tengamos'."
             )
 
     def process_message(self, user_message, context="tienda"):
