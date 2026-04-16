@@ -326,18 +326,22 @@
    ROBOT ANIMADO - Botón del chat
    ========================================================= */
 .chat-bubble {
-    position: fixed;
-    bottom: 1.5rem;
-    left: 1.5rem;
-    width: 90px;
-    height: 90px;
-    background: transparent;
-    border-radius: 0;
-    border: none;
-    cursor: pointer;
+    position: fixed !important;
+    bottom: 1.5rem !important;
+    left: 1.5rem !important;
+    width: 100px !important;
+    height: 100px !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    cursor: pointer !important;
     display: flex !important;
-    align-items: flex-end;
-    justify-content: center;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    padding: 0 !important;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     z-index: 99999 !important;
     padding: 0;
@@ -436,10 +440,14 @@
 }
 
 .chat-bubble img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    mix-blend-mode: multiply;
+    filter: drop-shadow(0 8px 16px rgba(30, 58, 138, 0.5));
     transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: block !important;
+    background: transparent !important;
 }
 
 .chat-bubble:hover {
@@ -447,13 +455,14 @@
 }
 
 .chat-bubble:hover img {
-    transform: scale(1.08);
+    transform: scale(1.1);
+    filter: drop-shadow(0 12px 24px rgba(59, 130, 246, 0.8));
 }
 
 @keyframes robot-wiggle {
     0%, 100% { transform: translateY(-4px) rotate(0deg); }
-    25% { transform: translateY(-6px) rotate(-5deg); }
-    75% { transform: translateY(-6px) rotate(5deg); }
+    25% { transform: translateY(-6px) rotate(-6deg); }
+    75% { transform: translateY(-6px) rotate(6deg); }
 }
 
 /* Botón de WhatsApp Premium */
