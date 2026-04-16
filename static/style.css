@@ -413,7 +413,9 @@
     opacity: 1;
     transition: all 0.5s;
     pointer-events: none;
-    white-space: nowrap;
+    white-space: normal;
+    width: max-content;
+    min-width: 80px;
     animation: greeting-appear 0.5s ease-out 1s both;
 }
 
