@@ -347,6 +347,13 @@
     overflow: visible !important;
 }
 
+.chat-bubble.bubble-hidden {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transform: scale(0.5) !important;
+}
+
 .chat-bubble img {
     width: 100% !important;
     height: 100% !important;

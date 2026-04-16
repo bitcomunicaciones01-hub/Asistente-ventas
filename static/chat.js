@@ -32,16 +32,16 @@ const initChat = () => {
 
     // Toggle Chat Window
     els.chatButton.addEventListener('click', () => {
-        els = getElements(); // Refrescamos por si acaso
+        els = getElements();
         els.chatWindow.classList.remove('hidden');
-        els.chatButton.style.display = 'none';
+        els.chatButton.classList.add('bubble-hidden');
         if (els.userInput) els.userInput.focus();
     });
 
     if (els.closeChat) {
         els.closeChat.addEventListener('click', () => {
             els.chatWindow.classList.add('hidden');
-            els.chatButton.style.display = 'flex';
+            els.chatButton.classList.remove('bubble-hidden');
         });
     }
 
