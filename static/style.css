@@ -327,27 +327,35 @@
    ========================================================= */
 .chat-bubble {
     position: fixed !important;
-    bottom: 1.5rem !important;
-    left: 1.5rem !important;
-    width: 100px !important;
-    height: 100px !important;
+    bottom: 20px !important;
+    left: 20px !important;
+    width: 80px !important;
+    height: 80px !important;
     background: transparent !important;
     background-color: transparent !important;
-    border-radius: 0 !important;
     border: none !important;
     box-shadow: none !important;
     outline: none !important;
     cursor: pointer !important;
     display: flex !important;
-    align-items: flex-end !important;
+    align-items: center !important;
     justify-content: center !important;
     padding: 0 !important;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    z-index: 99999 !important;
-    padding: 0;
-    overflow: visible;
-    animation: robot-float 3.5s ease-in-out infinite;
-    filter: drop-shadow(0 10px 20px rgba(30, 58, 138, 0.5));
+    z-index: 999999 !important;
+    transition: all 0.4s ease;
+    animation: robot-float 3s ease-in-out infinite !important;
+    overflow: visible !important;
+}
+
+.chat-bubble img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)) !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    mix-blend-mode: multiply !important;
+    display: block !important;
 }
 
 @keyframes robot-float {

@@ -22,12 +22,12 @@ const initChat = () => {
     // CARGA DE LOGO DINÁMICO
     const botLogo = document.getElementById('bot-logo');
     if (botLogo) {
-        botLogo.src = `${baseUrl}/static/robot.png`;
+        botLogo.src = `${baseUrl}/static/logo.png`;
     }
 
     const bubbleLogo = document.getElementById('bubble-logo');
     if (bubbleLogo) {
-        bubbleLogo.src = `${baseUrl}/static/robot.png`;
+        bubbleLogo.src = `${baseUrl}/static/logo.png`;
     }
 
     // Toggle Chat Window
