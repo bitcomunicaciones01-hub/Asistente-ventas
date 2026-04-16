@@ -14,11 +14,11 @@
         <p>Explora el catálogo y pregúntale a nuestro asistente lo que necesites.</p>
     </div>
 
-    <!-- Botón del Chat Widget con el Robotito -->
-    <button id="chat-button" class="chat-bubble">
+    <!-- Botón del Chat Widget con Robotito Animado -->
+    <button id="chat-button" class="chat-bubble" aria-label="Abrir asistente">
         <div class="chat-label">1</div>
-        <div class="chat-greeting">¡Hola!<br>¿Buscás algo?</div>
-        <img id="bubble-logo" src="" alt="Bit" style="width: 80%; height: 80%; object-fit: contain;">
+        <div class="chat-greeting">🤖 ¡Hola! ¿Te ayudo?</div>
+        <img id="bubble-logo" src="" alt="Robot Asistente" style="width: 100%; height: 100%; object-fit: contain;">
     </button>
 
     <!-- Ventana del Chat -->
@@ -26,14 +26,14 @@
         <div class="chat-header">
             <div class="bot-info">
                 <div class="avatar">
-                    <img id="bot-logo" src="" alt="Bit" style="width: 100%; height: 100%; object-fit: contain; border-radius: 12px;">
+                    <img id="bot-logo" src="" alt="Robot Asistente" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <div>
-                    <h3>Asistente IA</h3>
-                    <p>En línea • Bit Comunicaciones</p>
+                    <h3>Piter — Asistente IA 🤖</h3>
+                    <p><span class="online-dot"></span> En línea · Bit Comunicaciones</p>
                 </div>
             </div>
-            <button id="close-chat" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
+            <button id="close-chat" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer; opacity:0.7; transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">×</button>
         </div>
         
         <div id="chat-messages" class="chat-messages">
