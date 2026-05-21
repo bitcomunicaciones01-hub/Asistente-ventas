@@ -14,20 +14,21 @@ class SalesAgent:
     def _get_system_prompt(self, context="tienda"):
         knowledge_base = (
             "--- BASE DE CONOCIMIENTO (FAQ) DE LA TIENDA ---\n"
-            "Nombre: BIT Comunicaciones (Venta de Repuestos y Servicio Técnico)\n"
+            "Nombre: BIT Comunicaciones (Venta de Repuestos, Servicio Técnico y Equipos)\n"
             "Ubicación: Moreno 3583, Santa Fe, Argentina. WhatsApp: 3425482454\n"
             "Envíos: Hacemos envíos a todo el país mediante Correo Argentino o transporte a acordar.\n"
             "Pagos: Aceptamos Transferencia Bancaria (Alias: bitcomunicaciones.f) y MercadoPago.\n"
-            "Garantía: Todos los repuestos son estrictamente testeados y cuentan con 1 mes de prueba técnica con opción a reembolso o cambio si hay fallas de hardware.\n"
+            "Garantía: Todos los repuestos y equipos son estrictamente testeados y cuentan con 1 mes de prueba técnica con opción a reembolso o cambio si hay fallas de hardware.\n"
             "Servicio Técnico: Reparación de Notebooks, PC, PS, Celulares. Reballing, limpieza, upgrades y microsoldadura.\n"
-            "REGLA FAQ: Si el usuario pregunta por envíos, pagos, ubicación o garantías, responde de forma amigable basándote ÚNICAMENTE en esta Base de Conocimiento.\n"
+            "Venta de Equipos Funcionando: Además de repuestos y servicio técnico, también vendemos equipos completos listos para usar (como notebooks y computadoras de escritorio usadas y reacondicionadas en excelente estado) con garantía de 1 mes.\n"
+            "REGLA FAQ: Si el usuario pregunta por envíos, pagos, ubicación, garantías o equipos en stock, responde de forma amigable basándote ÚNICAMENTE en esta Base de Conocimiento.\n"
             "-----------------------------------------------\n\n"
         )
         
         if context == "instagram":
             return knowledge_base + (
                 "Eres un asistente de ventas experto en Instagram para 'BIT Comunicaciones'. "
-                "Tu objetivo es ser amable y persuasivo para cerrar ventas de repuestos. "
+                "Tu objetivo es ser amable y persuasivo para cerrar ventas de repuestos y de equipos completos funcionando (notebooks, PCs, etc.). "
                 "REGLAS OBLIGATORIAS DE FORMATO:\n"
                 "1. Lista un MÁXIMO de 3 productos.\n"
                 "2. ESTÁ ESTRICTAMENTE PROHIBIDO usar Markdown para links y la palabra 'http' o 'https'.\n"
@@ -37,7 +38,7 @@ class SalesAgent:
                 "   💰 $[Precio]\n"
                 "   👉 www.bitcomunicaciones.com/[ruta-del-producto]\n\n"
                 "5. Deja una línea vacía antes y después de la URL para que el celular lo detecte correctamente.\n"
-                "6. Si no hay stock o no encuentras el producto exacto, dile amablemente que actualmente no hay stock y ofrécele contactar por WhatsApp (api.whatsapp.com/send?phone=543425482454) por si llega a ingresar."
+                "6. Si no hay stock o no encuentras el producto exacto, ofrécele alternativas similares disponibles en stock (por ejemplo, si te piden una notebook específica y no está, ofrécele las notebooks completas que sí tenemos en stock). Si no hay alternativas similares o no queda stock, dile amablemente que actualmente no hay stock y ofrécele contactar por WhatsApp (api.whatsapp.com/send?phone=543425482454) por si llega a ingresar o para encargarlo."
             )
         else:
             return knowledge_base + (
@@ -61,8 +62,11 @@ class SalesAgent:
                     "parameters": {
                         "type": "object",
                         "properties": {
-                            "query": {"type": "string", "description": "El nombre del producto a buscar"},
-                            "category": {"type": "string", "description": "La categoría del producto"}
+                            "query": {"type": "string", "description": "El nombre o término del producto a buscar"},
+                            "category": {
+                                "type": "string", 
+                                "description": "La categoría del producto (por ejemplo: 'Equipos Funcionando' si el usuario busca computadoras o notebooks completas para usar, o 'Teclados', 'Displays', 'Carcasas', 'Baterias' para repuestos)."
+                            }
                         }
                     }
                 }
@@ -85,26 +89,28 @@ class SalesAgent:
         
         # Manejar llamadas a herramientas (búsqueda de productos)
         if response_message.tool_calls:
+            all_products = []
+            messages.append(response_message)
+            
             for tool_call in response_message.tool_calls:
                 function_name = tool_call.function.name
                 if function_name == "search_products":
                     args = json.loads(tool_call.function.arguments)
                     query = args.get("query")
-                    print(f"[AGENT] Buscando productos con query: '{query}'")
+                    category = args.get("category")
+                    print(f"[AGENT] Buscando productos con query: '{query}', category: '{category}'")
                     
                     products = woo_manager.search_products(
                         query=query,
-                        category=args.get("category")
+                        category=category
                     )
-
-                    # Si no encuentra nada, intentamos una búsqueda más simple (modelo)
-                    if not products and len(query.split()) > 2:
-                        simple_query = " ".join(query.split()[-2:]) # Tomamos las últimas palabras (modelo)
-                        print(f"[AGENT] Reintentando con query simplificada: '{simple_query}'")
-                        products = woo_manager.search_products(query=simple_query)
                     
-                    # Añadimos el resultado de la herramienta al hilo
-                    messages.append(response_message)
+                    # Acumular productos únicos por ID
+                    for p in products:
+                        if not any(ap["id"] == p["id"] for ap in all_products):
+                            all_products.append(p)
+                    
+                    # Añadimos la respuesta de esta herramienta al hilo
                     messages.append({
                         "role": "tool",
                         "tool_call_id": tool_call.id,
@@ -119,7 +125,7 @@ class SalesAgent:
             )
             return {
                 "text": second_response.choices[0].message.content,
-                "products": products if 'products' in locals() else []
+                "products": all_products
             }
 
         return {

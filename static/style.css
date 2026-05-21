@@ -91,8 +91,15 @@
 }
 
 @keyframes avatar-bob {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-4px); }
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-4px);
+    }
 }
 
 .chat-header h3 {
@@ -128,8 +135,19 @@
 }
 
 @keyframes online-pulse {
-    0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 4px rgba(34, 197, 94, 0.8); }
-    50% { opacity: 0.7; transform: scale(1.3); box-shadow: 0 0 10px rgba(34, 197, 94, 1); }
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: 0 0 4px rgba(34, 197, 94, 0.8);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: scale(1.3);
+        box-shadow: 0 0 10px rgba(34, 197, 94, 1);
+    }
 }
 
 /* Messages Luxury */
@@ -149,14 +167,22 @@
     font-size: 0.95rem;
     line-height: 1.5;
     animation: slideIn 0.4s ease-out;
-    overflow: visible; 
+    overflow: visible;
     height: auto;
-    color: #ffffff !important; /* Forzamos blanco para los mensajes */
+    color: #ffffff !important;
+    /* Forzamos blanco para los mensajes */
 }
 
 @keyframes slideIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .message.bot {
@@ -198,7 +224,8 @@
     gap: 0.5rem;
     padding: 0.5rem 0 1rem 0;
     overflow: visible;
-    margin-top: -0.5rem; /* Pegado al mensaje */
+    margin-top: -0.5rem;
+    /* Pegado al mensaje */
 }
 
 /* ANTI-APILAMIENTO: Prohibimos fotos dentro del texto */
@@ -207,7 +234,8 @@
 }
 
 .product-card {
-    min-width: 115px; /* Calculado para que entren 3 en el ancho del chat */
+    min-width: 115px;
+    /* Calculado para que entren 3 en el ancho del chat */
     max-width: 115px;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--glass-border);
@@ -270,7 +298,7 @@
     box-shadow: 0 4px 12px rgba(244, 114, 182, 0.3);
 }
 
-.buy-link:hover { 
+.buy-link:hover {
     transform: scale(1.05);
     box-shadow: 0 6px 15px rgba(244, 114, 182, 0.5);
 }
@@ -317,10 +345,12 @@
 
 #send-btn svg {
     stroke: #ffffff !important;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
-#send-btn:hover { transform: scale(1.1); }
+#send-btn:hover {
+    transform: scale(1.1);
+}
 
 /* =========================================================
    ROBOT ANIMADO - Botón del chat
@@ -358,7 +388,7 @@
     width: 100% !important;
     height: 100% !important;
     object-fit: contain !important;
-    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)) !important;
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2)) !important;
     background: transparent !important;
     background-color: transparent !important;
     mix-blend-mode: multiply !important;
@@ -366,10 +396,13 @@
 }
 
 @keyframes robot-float {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0px);
         filter: drop-shadow(0 10px 20px rgba(30, 58, 138, 0.5));
     }
+
     50% {
         transform: translateY(-8px);
         filter: drop-shadow(0 20px 30px rgba(59, 130, 246, 0.7));
@@ -377,9 +410,17 @@
 }
 
 @keyframes pulse-ring {
-    0% { filter: drop-shadow(0 0 0px rgba(59, 130, 246, 0.6)); }
-    50% { filter: drop-shadow(0 0 18px rgba(59, 130, 246, 0.9)); }
-    100% { filter: drop-shadow(0 0 0px rgba(59, 130, 246, 0.6)); }
+    0% {
+        filter: drop-shadow(0 0 0px rgba(59, 130, 246, 0.6));
+    }
+
+    50% {
+        filter: drop-shadow(0 0 18px rgba(59, 130, 246, 0.9));
+    }
+
+    100% {
+        filter: drop-shadow(0 0 0px rgba(59, 130, 246, 0.6));
+    }
 }
 
 .chat-label {
@@ -398,8 +439,15 @@
 }
 
 @keyframes badge-bounce {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.2); }
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
 }
 
 /* Globo de texto de invitación */
@@ -416,7 +464,7 @@
     font-weight: 600;
     line-height: 1.3;
     text-align: center;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     opacity: 1;
     transition: all 0.5s;
     pointer-events: none;
@@ -427,8 +475,15 @@
 }
 
 @keyframes greeting-appear {
-    from { opacity: 0; transform: translateX(-10px) scale(0.9); }
-    to   { opacity: 1; transform: translateX(0) scale(1); }
+    from {
+        opacity: 0;
+        transform: translateX(-10px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
 }
 
 .chat-greeting::after {
@@ -452,8 +507,15 @@
 }
 
 @keyframes float {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(-5px); }
+
+    0%,
+    100% {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    50% {
+        transform: translateX(-50%) translateY(-5px);
+    }
 }
 
 .chat-bubble img {
@@ -477,9 +539,19 @@
 }
 
 @keyframes robot-wiggle {
-    0%, 100% { transform: translateY(-4px) rotate(0deg); }
-    25% { transform: translateY(-6px) rotate(-6deg); }
-    75% { transform: translateY(-6px) rotate(6deg); }
+
+    0%,
+    100% {
+        transform: translateY(-4px) rotate(0deg);
+    }
+
+    25% {
+        transform: translateY(-6px) rotate(-6deg);
+    }
+
+    75% {
+        transform: translateY(-6px) rotate(6deg);
+    }
 }
 
 /* Botón de WhatsApp Premium */
@@ -488,7 +560,8 @@
     align-items: center;
     gap: 0.75rem;
     background: #25d366;
-    color: white !important; /* Forzamos blanco */
+    color: white !important;
+    /* Forzamos blanco */
     padding: 0.8rem 1.2rem;
     border-radius: 12px;
     text-decoration: none;
@@ -512,7 +585,7 @@
 @media (max-width: 480px) {
     .chat-window {
         width: 92%;
-        height: 75%; 
+        height: 75%;
         bottom: 1rem;
         left: 1rem;
         max-height: 600px;
@@ -523,7 +596,8 @@
     .chat-bubble {
         bottom: 1.5rem;
         left: 1.5rem;
-        width: 70px; /* Más grande en móvil */
+        width: 70px;
+        /* Más grande en móvil */
         height: 70px;
         border-width: 2px;
     }
@@ -533,7 +607,8 @@
         font-size: 11px;
         padding: 4px 10px;
         display: block !important;
-        background: #a855f7 !important; /* Color sólido garantizado en móvil */
+        background: #a855f7 !important;
+        /* Color sólido garantizado en móvil */
         color: white !important;
     }
 
@@ -544,7 +619,8 @@
 
     .chat-input-area {
         padding: 0.75rem;
-        gap: 0.5rem; /* Menos espacio para que entre el botón */
+        gap: 0.5rem;
+        /* Menos espacio para que entre el botón */
     }
 
     #send-btn {

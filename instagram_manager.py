@@ -246,7 +246,7 @@ class InstagramManager:
                                             model="whisper-1",
                                             file=af_file,
                                             language="es",
-                                            prompt="Contexto estricto del audio: repuestos de notebook, netbook, pantalla, batería, teclado, disco sólido, memoria RAM, informática, electrónica, pin de carga, placa madre, mother. Marcas: Banghó, Positivo BGH, Noblex, Lenovo, HP, Dell, Asus, Acer, Samsung, Toshiba, Sony Vaio, CX, carcasa, tapa, palmrest, display, flex, bisagras."
+                                            prompt="Contexto estricto del audio: repuestos de notebook, netbook, pantalla, batería, teclado, disco sólido, memoria RAM, informática, electrónica, pin de carga, placa madre, mother, notebooks usadas, equipos en stock, pc de escritorio, computadoras completas funcionando, reacondicionada, pc armada. Marcas: Banghó, Positivo BGH, Noblex, Lenovo, HP, Dell, Asus, Acer, Samsung, Toshiba, Sony Vaio, CX, carcasa, tapa, palmrest, display, flex, bisagras."
                                         )
                                     td["text"] = "🎙️ " + transcription.text
                                     os.unlink(tmp_path)
