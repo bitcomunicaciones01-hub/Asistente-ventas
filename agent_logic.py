@@ -10,6 +10,7 @@ class SalesAgent:
     def __init__(self):
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         self.model = "gpt-4o-mini" # Modelo económico y potente
+        self.conversations = {} # Historial por thread_id para mantener contexto
 
     def _get_system_prompt(self, context="tienda"):
         knowledge_base = (
@@ -51,7 +52,7 @@ class SalesAgent:
                 "SI NO HAY RESULTADOS: Debes responder EXACTAMENTE y únicamente con este texto: 'Ups no lo tenemos en este momento, pero te podes comunicar al 3425482454 para encargarlo o para avisar cuando tengamos'."
             )
 
-    def process_message(self, user_message, context="tienda"):
+    def process_message(self, user_message, context="tienda", thread_id="default"):
         # Definimos las herramientas de búsqueda de productos
         tools = [
             {
@@ -73,10 +74,19 @@ class SalesAgent:
             }
         ]
 
-        messages = [
-            {"role": "system", "content": self._get_system_prompt(context)},
-            {"role": "user", "content": user_message}
-        ]
+        if thread_id not in self.conversations:
+            self.conversations[thread_id] = [
+                {"role": "system", "content": self._get_system_prompt(context)}
+            ]
+            
+        messages = self.conversations[thread_id]
+        messages.append({"role": "user", "content": user_message})
+
+        # Mantener el historial acotado (limpiar si es muy largo para evitar costos excesivos, manteniendo tool_calls intactos)
+        if len(messages) > 60:
+            # Dejamos el prompt del sistema y nos quedamos con la mitad más reciente
+            self.conversations[thread_id] = [messages[0]] + messages[-30:]
+            messages = self.conversations[thread_id]
 
         response = self.client.chat.completions.create(
             model=self.model,
@@ -123,11 +133,18 @@ class SalesAgent:
                 model=self.model,
                 messages=messages
             )
+            
+            # Guardamos la respuesta final en el historial
+            messages.append(second_response.choices[0].message)
+            
             return {
                 "text": second_response.choices[0].message.content,
                 "products": all_products
             }
 
+        # Si no hubo tools, guardamos la respuesta directa
+        messages.append(response_message)
+        
         return {
             "text": response_message.content,
             "products": []

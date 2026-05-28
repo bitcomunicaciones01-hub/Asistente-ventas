@@ -269,7 +269,7 @@ class InstagramManager:
                             
                             # 2. IA genera respuesta
                             logger.info(f"[IG-DEBUG] Consultando al Agente de Ventas...")
-                            response_data = sales_agent.process_message(td["text"], context="instagram")
+                            response_data = sales_agent.process_message(td["text"], context="instagram", thread_id=td["id"])
                             response_text = response_data["text"]
                             
                             # 3. Tiempo de escritura
