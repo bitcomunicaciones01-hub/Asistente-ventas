@@ -22,7 +22,8 @@ class SalesAgent:
             "Garantía: Todos los repuestos y equipos son estrictamente testeados y cuentan con 1 mes de prueba técnica con opción a reembolso o cambio si hay fallas de hardware.\n"
             "Servicio Técnico: Reparación de Notebooks, PC, PS, Celulares. Reballing, limpieza, upgrades y microsoldadura.\n"
             "Venta de Equipos Funcionando: Además de repuestos y servicio técnico, también vendemos equipos completos listos para usar (como notebooks y computadoras de escritorio usadas y reacondicionadas en excelente estado) con garantía de 1 mes.\n"
-            "REGLA FAQ: Si el usuario pregunta por envíos, pagos, ubicación, garantías o equipos en stock, responde de forma amigable basándote ÚNICAMENTE en esta Base de Conocimiento.\n"
+            "Compra de Máquinas y Lotes: SÍ estamos comprando máquinas, equipos o lotes. Si el usuario pregunta si compramos equipos, responde amablemente 'Sí, estamos comprando' y bríndale nuestro WhatsApp directo (3425482454) para que se comunique con nosotros.\n"
+            "REGLA FAQ: Si el usuario pregunta por envíos, pagos, ubicación, garantías, equipos en stock o si compramos equipos, responde de forma amigable basándote ÚNICAMENTE en esta Base de Conocimiento.\n"
             "-----------------------------------------------\n\n"
         )
         
